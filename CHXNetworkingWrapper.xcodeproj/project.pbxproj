@@ -18,7 +18,7 @@
 		46373C941AEB69080036F596 /* CHXErrorCodeDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C8A1AEB69080036F596 /* CHXErrorCodeDescription.m */; };
 		46373C951AEB69080036F596 /* CHXRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C8D1AEB69080036F596 /* CHXRequest.m */; };
 		46373C961AEB69080036F596 /* CHXRequestProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C8F1AEB69080036F596 /* CHXRequestProxy.m */; };
-		46373C971AEB69080036F596 /* HCXResponseCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C911AEB69080036F596 /* HCXResponseCache.m */; };
+		46373C971AEB69080036F596 /* CHXResponseCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C911AEB69080036F596 /* CHXResponseCache.m */; };
 		46373C981AEB69080036F596 /* NSObject+ObjcRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C931AEB69080036F596 /* NSObject+ObjcRuntime.m */; };
 		46373C9E1AEB69170036F596 /* NSDataExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C9B1AEB69170036F596 /* NSDataExtension.m */; };
 		46373C9F1AEB69170036F596 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C9D1AEB69170036F596 /* NSString+MD5.m */; };
@@ -57,8 +57,8 @@
 		46373C8D1AEB69080036F596 /* CHXRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXRequest.m; sourceTree = "<group>"; };
 		46373C8E1AEB69080036F596 /* CHXRequestProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestProxy.h; sourceTree = "<group>"; };
 		46373C8F1AEB69080036F596 /* CHXRequestProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXRequestProxy.m; sourceTree = "<group>"; };
-		46373C901AEB69080036F596 /* HCXResponseCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCXResponseCache.h; sourceTree = "<group>"; };
-		46373C911AEB69080036F596 /* HCXResponseCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCXResponseCache.m; sourceTree = "<group>"; };
+		46373C901AEB69080036F596 /* CHXResponseCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXResponseCache.h; sourceTree = "<group>"; };
+		46373C911AEB69080036F596 /* CHXResponseCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXResponseCache.m; sourceTree = "<group>"; };
 		46373C921AEB69080036F596 /* NSObject+ObjcRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+ObjcRuntime.h"; sourceTree = "<group>"; };
 		46373C931AEB69080036F596 /* NSObject+ObjcRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+ObjcRuntime.m"; sourceTree = "<group>"; };
 		46373C9A1AEB69170036F596 /* NSDataExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDataExtension.h; sourceTree = "<group>"; };
@@ -169,8 +169,8 @@
 				46373C8D1AEB69080036F596 /* CHXRequest.m */,
 				46373C8E1AEB69080036F596 /* CHXRequestProxy.h */,
 				46373C8F1AEB69080036F596 /* CHXRequestProxy.m */,
-				46373C901AEB69080036F596 /* HCXResponseCache.h */,
-				46373C911AEB69080036F596 /* HCXResponseCache.m */,
+				46373C901AEB69080036F596 /* CHXResponseCache.h */,
+				46373C911AEB69080036F596 /* CHXResponseCache.m */,
 				46373C921AEB69080036F596 /* NSObject+ObjcRuntime.h */,
 				46373C931AEB69080036F596 /* NSObject+ObjcRuntime.m */,
 			);
@@ -365,7 +365,7 @@
 				46373C951AEB69080036F596 /* CHXRequest.m in Sources */,
 				46373C681AEB68E10036F596 /* AppDelegate.m in Sources */,
 				46373C961AEB69080036F596 /* CHXRequestProxy.m in Sources */,
-				46373C971AEB69080036F596 /* HCXResponseCache.m in Sources */,
+				46373C971AEB69080036F596 /* CHXResponseCache.m in Sources */,
 				46373C981AEB69080036F596 /* NSObject+ObjcRuntime.m in Sources */,
 				46373C651AEB68E10036F596 /* main.m in Sources */,
 				46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */,

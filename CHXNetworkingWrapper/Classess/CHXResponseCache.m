@@ -1,6 +1,6 @@
 //
-//  NWResponseCache.m
-//  NWNetworkingWrapper
+//  HCXResponseCache.m
+//  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/atcuan).
@@ -24,10 +24,10 @@
 //  THE SOFTWARE.
 //
 
-#import "HCXResponseCache.h"
+#import "CHXResponseCache.h"
 #import "NSObject+ObjcRuntime.h"
 
-@implementation HCXResponseCache
+@implementation CHXResponseCache
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [[self objc_properties] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

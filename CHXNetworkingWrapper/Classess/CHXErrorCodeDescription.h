@@ -1,6 +1,6 @@
 //
-//  NWErrorCodeDescription.h
-//  NWNetworkingWrapper
+//  CHXErrorCodeDescription.h
+//  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/atcuan).

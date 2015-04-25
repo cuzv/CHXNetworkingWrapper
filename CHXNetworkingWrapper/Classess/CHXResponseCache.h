@@ -1,6 +1,6 @@
 //
-//  NWResponseCache.h
-//  NWNetworkingWrapper
+//  HCXResponseCache.h
+//  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/atcuan).
@@ -26,7 +26,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HCXResponseCache : NSObject <NSCoding>
+@interface CHXResponseCache : NSObject <NSCoding>
 
 @property (nonatomic, strong) id cahceResponseObject;
 @property (nonatomic, strong) NSDate *cacheDate;

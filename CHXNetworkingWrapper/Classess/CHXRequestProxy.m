@@ -1,8 +1,8 @@
 //
-//  NWRequestProxy.m
-//  NWNetworkingWrapper
+//  CHXRequestProxy.m
+//  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2014-12-02.
+//  Created by Moch Xiao on 2015-04-19.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/atcuan).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,7 @@
 #import "AFNetworking.h"
 #import "CHXMacro.h"
 #import "CHXRequest.h"
-#import "HCXResponseCache.h"
+#import "CHXResponseCache.h"
 #import "CHXErrorCodeDescription.h"
 #import "NSObject+ObjcRuntime.h"
 
@@ -282,7 +282,7 @@ const NSInteger kMaxConcurrentOperationCount = 8;
     }
     
     // If cache data not exist, should continure request
-    HCXResponseCache *cacheResponse = [self pr_cacheForRequest:request];
+    CHXResponseCache *cacheResponse = [self pr_cacheForRequest:request];
     if (!cacheResponse.cahceResponseObject || !cacheResponse.cacheDate) {
         return YES;
     }
@@ -303,10 +303,10 @@ const NSInteger kMaxConcurrentOperationCount = 8;
     return NO;
 }
 
-- (HCXResponseCache *)pr_cacheForRequest:(CHXRequest *)request {
+- (CHXResponseCache *)pr_cacheForRequest:(CHXRequest *)request {
     // Retrieve cache data
     NSString *filePath = [self pr_cacheFilePathStringForReqeust:request];
-    HCXResponseCache *cache = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    CHXResponseCache *cache = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
     
     return cache;
 }
@@ -321,7 +321,7 @@ const NSInteger kMaxConcurrentOperationCount = 8;
         NSString *filePath = [self pr_cacheFilePathStringForReqeust:request];
         
         // Cache data
-        HCXResponseCache *cache = [HCXResponseCache new];
+        CHXResponseCache *cache = [CHXResponseCache new];
         cache.cacheDate = [NSDate date];
         cache.cahceResponseObject = responseObject;
         [NSKeyedArchiver archiveRootObject:cache toFile:filePath];
