@@ -1,5 +1,5 @@
 //
-//  HCXResponseCache.h
+//  CHXResponseCache.h
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
