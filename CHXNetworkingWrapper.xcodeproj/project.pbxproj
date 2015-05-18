@@ -24,6 +24,7 @@
 		46373C9F1AEB69170036F596 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C9D1AEB69170036F596 /* NSString+MD5.m */; };
 		46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373CA31AEB697D0036F596 /* CHXBaseRequest.m */; };
 		46373CA71AEB697D0036F596 /* CHXPromoteProductListRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373CA51AEB697D0036F596 /* CHXPromoteProductListRequest.m */; };
+		466C91651B09F87E003674E9 /* CHXDownLoadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 466C91641B09F87E003674E9 /* CHXDownLoadRequest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,8 @@
 		46373CA31AEB697D0036F596 /* CHXBaseRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXBaseRequest.m; sourceTree = "<group>"; };
 		46373CA41AEB697D0036F596 /* CHXPromoteProductListRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXPromoteProductListRequest.h; sourceTree = "<group>"; };
 		46373CA51AEB697D0036F596 /* CHXPromoteProductListRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXPromoteProductListRequest.m; sourceTree = "<group>"; };
+		466C91631B09F87E003674E9 /* CHXDownLoadRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXDownLoadRequest.h; sourceTree = "<group>"; };
+		466C91641B09F87E003674E9 /* CHXDownLoadRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXDownLoadRequest.m; sourceTree = "<group>"; };
 		7D3A254F9A86087F4FAE5C61 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		7F11297AE44BC0B398033C6E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFBE4633E1521F1775A46AAC /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 				46373CA31AEB697D0036F596 /* CHXBaseRequest.m */,
 				46373CA41AEB697D0036F596 /* CHXPromoteProductListRequest.h */,
 				46373CA51AEB697D0036F596 /* CHXPromoteProductListRequest.m */,
+				466C91631B09F87E003674E9 /* CHXDownLoadRequest.h */,
+				466C91641B09F87E003674E9 /* CHXDownLoadRequest.m */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -367,6 +372,7 @@
 				46373C961AEB69080036F596 /* CHXRequestProxy.m in Sources */,
 				46373C971AEB69080036F596 /* CHXResponseCache.m in Sources */,
 				46373C981AEB69080036F596 /* NSObject+ObjcRuntime.m in Sources */,
+				466C91651B09F87E003674E9 /* CHXDownLoadRequest.m in Sources */,
 				46373C651AEB68E10036F596 /* main.m in Sources */,
 				46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */,
 			);

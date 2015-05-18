@@ -101,6 +101,15 @@
     return nil;
 }
 
+- (void(^)(CGFloat progress))downloadProgress {
+    return nil;
+}
+
+- (void(^)(CGFloat progress))uploadProgress {
+    return nil;
+}
+
+
 - (NSURLRequest *)customURLRequest {
     return nil;
 }

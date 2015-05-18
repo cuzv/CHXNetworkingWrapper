@@ -31,7 +31,8 @@
 static const NSString *kUser = @"haioo";
 NSString * const kSecrectKey = @"Ka48qGTlf00PSoNnZwM3Rx8PG2oOs1RK";
 
-NSString * const ApiURLForDebug = @"testapi.haioo.com/";
+//NSString * const ApiURLForDebug = @"testapi.haioo.com/";
+NSString * const ApiURLForDebug = @"api.haioo.com/";
 NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 #if DEBUG

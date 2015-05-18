@@ -34,21 +34,21 @@
 + (instancetype)sharedInstance;
 
 /**
- *  添加请求任务
+ *  Add a request task
  *
- *  @param request 请求任务
+ *  @param the request task
  */
 - (void)addRequest:(CHXRequest *)request;
 
 /**
- *  取消请求任务
+ *  Cancel request task
  *
- *  @param request 需要被取消的请求任务
+ *  @param request the cancel task
  */
 - (void)removeRequest:(CHXRequest *)request;
 
 /**
- *  取消所有请求任务
+ *  Cancel all request task
  */
 - (void)removeAllRequest;
 

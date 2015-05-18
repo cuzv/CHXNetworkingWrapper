@@ -26,6 +26,7 @@
 
 #import "ViewController.h"
 #import "CHXPromoteProductListRequest.h"
+#import "CHXDownLoadRequest.h"
 
 @interface ViewController ()
 
@@ -54,5 +55,26 @@
             });
         }];
     });
+}
+
+- (void)testDownload {
+    CHXDownLoadRequest *down = [[CHXDownLoadRequest new] initWithDownloadProgress:^(CGFloat progress) {
+        NSLog(@"progress = %f", progress);
+    }];
+    [down startRequestWithSuccess:^(id responseObject) {
+        NSLog(@"%@", responseObject);
+        dispatch_async(dispatch_get_main_queue(), ^{
+        });
+        
+    } failue:^(id errorMessage) {
+        NSLog(@"%@", errorMessage);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+        });
+    }];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    [self testDownload];
 }
 @end

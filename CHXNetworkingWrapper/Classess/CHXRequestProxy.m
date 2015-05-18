@@ -155,6 +155,21 @@ const NSInteger kMaxConcurrentOperationCount = 8;
                     } failure:^(NSURLSessionDataTask *task, NSError *error) {
                         [self pr_handleRequestFailureWithSessionDataTask:task error:error];
                     }];
+                    
+                    // Setup upload progress
+                    void(^block)(CGFloat progress) = [request uploadProgress];
+                    if (block) {
+                        [_sessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+                            block(totalBytesSent * 1.0f / totalBytesExpectedToSend * 1.0f);
+                        }];
+                        __weak typeof(_sessionManager) weakSessionManager = _sessionManager;
+                        [_sessionManager setTaskDidCompleteBlock:^(NSURLSession *session, NSURLSessionTask *task, NSError *error) {
+                            __strong typeof(weakSessionManager) strongSessionManager = weakSessionManager;
+                            [strongSessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+                                // Do nothing
+                            }];
+                        }];
+                    }
                 } else {
                     dataTask = [_sessionManager POST:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
                         [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
@@ -178,6 +193,7 @@ const NSInteger kMaxConcurrentOperationCount = 8;
                     NSString *fileRemoteURLString = [self pr_requestFileRemoteURLStringWithRequest:request];
                     NSURL *fileRemoteURL = [NSURL URLWithString:fileRemoteURLString];
                     NSURLRequest *downURLRequest = [NSURLRequest requestWithURL:fileRemoteURL];
+
                     dataTask = [sessionManager downloadTaskWithRequest:downURLRequest progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
                         return [NSURL URLWithString:downloadTargetFilePath];
                     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
@@ -188,6 +204,15 @@ const NSInteger kMaxConcurrentOperationCount = 8;
                             [self pr_handleRequestSuccessWithSessionDataTask:request.requestSessionTask responseObject:object];
                         }
                     }];
+
+                    // Setup progress callback
+                    void(^block)(CGFloat progress) = [request downloadProgress];
+                    if (block) {
+                        [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
+                                block(totalBytesWritten * 1.0f / totalBytesExpectedToWrite * 1.0f);
+                        }];
+                    }
+                    
                     // If download on background
                     [sessionManager setDownloadTaskDidFinishDownloadingBlock:^NSURL *(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location) {
                         return [NSURL URLWithString:downloadTargetFilePath];

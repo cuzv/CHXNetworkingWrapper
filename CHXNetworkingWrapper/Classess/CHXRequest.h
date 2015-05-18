@@ -71,74 +71,88 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 @interface CHXRequest (CHXConstruct)
 
 /**
- *  组装请求参数
+ *  Get assembly request parameters
  *
- *  @return AF 请求参数
+ *  @return AF request parameters
  */
 - (NSDictionary *)requestParameters;
 
 /**
- *  请求公共 URL 参数字符串
+ *  Get the request URL address
  *
- *  @return 请求 URL 参数字符串
+ *  @return URL address
  */
 - (NSString *)requestURLString;
 
 /**
- *  请求方式
+ *  Get the request method
  *
- *  @return 请求方式
+ *  @return request method
  */
 - (CHXRequestMethod)requestMehtod;
 
 /**
- *  请求参数序列化类型
+ *  Get request paramters serialize type
  *
- *  @return 序列化器类型
+ *  @return request paramters serialize type
  */
 - (CHXRequestSerializerType)requestSerializerType;
 
 /**
- *  POST 数据提交 Block
+ *  Get POST body data block
  *
- *  @return POST 数据提交 Block
+ *  @return POST body data block
  */
 - (AFConstructingBlock)constructingBodyBlock;
 
 /**
- *  下载文件保存目录，应该设置 requestMehtod 为 GET
+ *  download file save path, the request method should always be `GET`
+ *  Note: make sure the download file save path exist
  *
- *  @return 文件保存目录
+ *  @return download file save path
  */
 - (NSString *)downloadTargetFilePathString;
 
 /**
- *  请求超时时长
+ *  download file progress(0~1)
  *
- *  @return 请求超时时长
+ *  @return progress
+ */
+- (void(^)(CGFloat progress))downloadProgress;
+
+/**
+ *  upload file progress(0~1)
+ *  @rerturn progress
+ */
+- (void(^)(CGFloat progress))uploadProgress;
+
+/**
+ *  Get the request timeout setup interval
+ *
+ *  @return timeout interval
  */
 - (NSTimeInterval)requestTimeoutInterval;
 
 /**
- *  构建自定义的 URLRequest
- *  若这个方法返回非 nil 对象，会忽略 requestParameters, requestBaseURLString,
- *	requestSpecificURLString, requestSuffixURLString, requestMehtod 等参数
+ *  Get the custom URLRequest
+ *  If return `nil`, ignore `requestParameters, requestBaseURLString,
+ *	requestSpecificURLString, requestSuffixURLString, requestMehtod`
  *
- *	@return 自定义的 URLRequest
+ *	@return Custom URLRequest
  */
 - (NSURLRequest *)customURLRequest;
 
 /**
- *  是否需要缓存
+ *  Is there need cache
  *
  *  @return Default value is NO
  */
 - (BOOL)requestNeedCache;
 
 /**
- *  缓存时长
+ *  Get cache time interval
  *
- *  @return 缓存时长，默认3分钟
+ *  @return cache time interval, default value is 3 minutes
  */
 - (NSTimeInterval)requestCacheDuration;
 
@@ -150,48 +164,48 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 @interface CHXRequest (CHXRetrieve)
 
 /**
- *  请求回送数据反序列化器类型，后台定义
+ *  Get response serizlizer type, defined by API maker
  *
- *  @return 请求回送数据反序列化器类型
+ *  @return response serizlizer type
  */
 - (CHXResponseSerializerType)responseSerializerType;
 
 /**
- *  回送数据接口 回送主要数据 字段名称
+ *  Get the retrieve data api field name
  *
- *  @return 回送数据接口 回送主要数据 字段名称
+ *  @return retrieve data api field name
  */
 - (NSString *)responseDataFieldName;
 
 /**
- *  回送数据接口 响应编码 字段名称，后台定义
+ *  Get the retrieve code api field name
  *
- *  @return 回送数据接口 响应编码 字段名称
+ *  @return retrieve code api field name
  */
 - (NSString *)responseCodeFieldName;
 
 /**
- *  回送数据 成功 code，后台定义
+ *  Get the response success code field name
  *
- *  @return 成功 code
+ *  @return success code field name
  */
 - (NSInteger)responseSuccessCodeValue;
 
 /**
- *  回送数据接口 响应消息 字段名称，后台定义
+ *  Get the retrieve message api field name
  *
- *  @return 回送数据接口 响应消息 字段名称
+ *  @return retrieve message api field name
  */
 - (NSString *)responseMessageFieldName;
 
-/// If retrieve data using JSON, ignore this
-/// If retrieve data using form binary data, provide a method convert to Foundation object
 /**
- *  将 HTTP 回送数据转换为 Foundation 对象
+ *  Convert HTTP response data to Foundation object
+ *  If retrieve data using JSON, ignore this
+ *  If retrieve data using form binary data, provide a method convert to Foundation object
  *
- *  @param data HTTP  回送数据
+ *  @param data HTTP  respone data
  *
- *  @return Foundation 对象
+ *  @return Foundation object
  */
 - (id)responseObjectFromRetrieveData:(id)data;
 
@@ -202,17 +216,19 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 @interface CHXRequest (CHXPerform)
 
 /**
- *  开始发起请求
+ *  Start a http request
  */
 - (CHXRequest *)startRequest;
 
 /**
- *  停止网络请求
+ *  Stop the http request
  */
 - (CHXRequest *)stopRequest;
 
 /**
- *  通知请求完成，CHXRequestProxy 调用，自身或者子类不要调用，不管请求成功还是失败，这个方法一定需要调用
+ *  Notify the request is complete
+ *  Only invoke by `CHXRequestProxy`
+ *  No matter the request is success or not, should invoke this mehod
  */
 - (CHXRequest *)notifyComplete;
 
@@ -240,27 +256,28 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 @interface CHXRequest ()
 
 /**
- *  持有请求任务，CHXRequestProxy 调用，自身或者子类不要调用
+ *  Hold on request task, only invoke by `CHXRequestProxy`
  */
 @property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
 
 /**
- *  回送数据，请求未完成可能为空
+ *  Retrieve data, may be nil before the request notify complete
  */
 @property (nonatomic, strong) id responseObject;
 
 /**
- *  回送错误信息，请求未完成可能为空
+ *  Retrieve error message, usuall be sent NSString
+ *  may be nil before the request notify complete
  */
 @property (nonatomic, strong) id errorMessage;
 
 /**
- *  是否响应成功
+ *  Is the request response success ?
  */
 @property (nonatomic, assign) BOOL responseSuccess;
 
 /**
- *  响应状态码
+ *  Response code
  */
 @property (nonatomic, assign) NSInteger responseCode;
 
