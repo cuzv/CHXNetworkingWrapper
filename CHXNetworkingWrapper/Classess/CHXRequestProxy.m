@@ -34,11 +34,13 @@
 
 #pragma mark -
 
-const NSInteger kMaxConcurrentOperationCount = 8;
-
 @interface CHXRequestProxy ()
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableDictionary *dataTaskContainer;
+// setup
+@property (nonatomic, copy) NSString *networkReachabilityStatusNotReachable;
+@property (nonatomic, assign) NSUInteger maxConcurrentOperationCount;
+
 @end
 
 @implementation CHXRequestProxy
@@ -55,8 +57,11 @@ const NSInteger kMaxConcurrentOperationCount = 8;
 
 - (instancetype)init {
     if (self = [super init]) {
+        _maxConcurrentOperationCount = 4;
+        _networkReachabilityStatusNotReachable = @"当前网络无连接，请稍候再试！";
+        
         _sessionManager = [AFHTTPSessionManager manager];
-        _sessionManager.operationQueue.maxConcurrentOperationCount = kMaxConcurrentOperationCount;
+        _sessionManager.operationQueue.maxConcurrentOperationCount = _maxConcurrentOperationCount;
         [_sessionManager.reachabilityManager startMonitoring];
         [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
@@ -79,6 +84,11 @@ const NSInteger kMaxConcurrentOperationCount = 8;
     [[CHXRequestProxy sharedInstance] addRequest:[CHXRequest new]];
 }
 
+- (void)setMaxConcurrentOperationCount:(NSUInteger)maxConcurrentOperationCount {
+    _maxConcurrentOperationCount = maxConcurrentOperationCount;
+    _sessionManager.operationQueue.maxConcurrentOperationCount = _maxConcurrentOperationCount;
+}
+
 #pragma mark -
 
 - (void)addRequest:(CHXRequest *)request {
@@ -91,6 +101,7 @@ const NSInteger kMaxConcurrentOperationCount = 8;
         
         // The first time description is not correct !
         NSLog(@"The network is currently unreachable.");
+        request.errorMessage = self.networkReachabilityStatusNotReachable;
         
         // Notify request complete
         [request notifyComplete];
