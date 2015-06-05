@@ -59,17 +59,25 @@
     if (self = [super init]) {
         _maxConcurrentOperationCount = 4;
         _networkReachabilityStatusNotReachable = @"当前网络无连接，请稍候再试！";
+        _enableDebugMode = YES;
         
         _sessionManager = [AFHTTPSessionManager manager];
         _sessionManager.operationQueue.maxConcurrentOperationCount = _maxConcurrentOperationCount;
         [_sessionManager.reachabilityManager startMonitoring];
+        __weak typeof(self) weakSelf = self;
         [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
+            __strong __typeof(weakSelf) strongSelf = weakSelf;
+            if (strongSelf.enableDebugMode) {
+                NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
+            }
+
         }];
         _dataTaskContainer = [NSMutableDictionary new];
         // When background download file complete, but move to target path failure, will post this notification
         [[NSNotificationCenter defaultCenter] addObserverForName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:nil queue:[NSOperationQueue currentQueue] usingBlock:^(NSNotification *note) {
-            NSLog(@"AFURLSessionDownloadTaskDidFailToMoveFileNotification = %@", note);
+            if (_enableDebugMode) {
+                NSLog(@"AFURLSessionDownloadTaskDidFailToMoveFileNotification: %@", note);
+            }
         }];
     }
     
@@ -100,7 +108,9 @@
         }
         
         // The first time description is not correct !
-        NSLog(@"The network is currently unreachable.");
+        if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+            NSLog(@"The network is currently unreachable.");
+        }
         request.errorMessage = self.networkReachabilityStatusNotReachable;
         
         // Notify request complete
@@ -282,9 +292,10 @@
     _dataTaskContainer[@(dataTask.taskIdentifier)] = request;
     
     // For debug
-    NSLog(@"Request URL = %@", dataTask.currentRequest.URL);
-    NSLog(@"Request parameters = %@", requestParameters);
-    NSLog(@"Request Http header fields = %@", dataTask.currentRequest.allHTTPHeaderFields);
+    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+        NSLog(@"Request URL: %@", dataTask.currentRequest.URL);
+        NSLog(@"Request parameters: %@", requestParameters);
+    }
 }
 
 - (void)removeRequest:(CHXRequest *)request {
@@ -334,7 +345,9 @@
     // dealloc request
     [self pr_prepareDeallocRequest:request];
     
-    NSLog(@"Retrieve data from cache.");
+    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+        NSLog(@"Retrieve data from cache.");
+    }
     
     return NO;
 }
@@ -456,7 +469,6 @@
 }
 
 - (void)pr_handleRequestSuccessWithSessionDataTask:(NSURLSessionTask *)task responseObject:(id)responseObject {
-    NSLog(@"Request successed");
     CHXRequest *request = [_dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
 
@@ -501,9 +513,9 @@
         
         id responseData = [responseObject objectForKey:responseDataFieldName];
         request.responseObject = responseData;
-#if DEBUG
-        NSLog(@"responseObject = %@", request.responseObject);
-#endif
+        if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+            NSLog(@"responseObject: %@", request.responseObject);
+        }
     } else {
         NSString *responseMessageFieldName = [request responseMessageFieldName];
         NSParameterAssert(responseMessageFieldName);
@@ -518,7 +530,9 @@
 }
 
 - (void)pr_handleRequestFailureWithSessionDataTask:(NSURLSessionTask *)task error:(NSError *)error {
-    NSLog(@"Request error: %@", CHXStringFromCFNetworkErrorCode(error.code));
+    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+        NSLog(@"Request failure with error: %@", CHXStringFromCFNetworkErrorCode(error.code));
+    }
     
     CHXRequest *request = [_dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);

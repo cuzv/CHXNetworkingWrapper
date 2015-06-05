@@ -31,6 +31,8 @@
 
 @interface CHXRequestProxy : NSObject
 
+@property (nonatomic, assign) BOOL enableDebugMode;
+
 + (instancetype)sharedInstance;
 
 /**
