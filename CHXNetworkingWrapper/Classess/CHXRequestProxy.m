@@ -300,8 +300,7 @@
 
 - (void)removeRequest:(CHXRequest *)request {
     [request.requestSessionTask cancel];
-    [request notifyComplete];
-    [self pr_prepareDeallocRequest:request];
+      [self pr_prepareDeallocRequest:request];
 }
 
 - (void)removeAllRequest {
@@ -476,6 +475,8 @@
     // If retrieve data using form binary data, provide a method convert to Foundation object
     responseObject = [request responseObjectFromRetrieveData:responseObject];
     NSParameterAssert(responseObject);
+
+    request.response = responseObject;
 
     [self pr_cacheIfNeededWithRequest:request responseObject:responseObject];
     [self pr_handleRequestSuccessWithRequest:request responseObject:responseObject];

@@ -78,6 +78,11 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 - (NSDictionary *)requestParameters;
 
 /**
+ *  Server response
+ */
+@property (nonatomic, strong) id response;
+
+/**
  *  Get the request URL address
  *
  *  @return URL address
@@ -259,6 +264,11 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
  *  Hold on request task, only invoke by `CHXRequestProxy`
  */
 @property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
+
+/**
+ *  Server response
+ */
+@property (nonatomic, strong) id response;
 
 /**
  *  Retrieve data, may be nil before the request notify complete

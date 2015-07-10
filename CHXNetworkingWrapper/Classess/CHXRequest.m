@@ -247,11 +247,7 @@
     dispatch_async(self.queue, ^{
         if (self.responseSuccess) {
             requestSuccessCompletionBlock(self.responseObject);
-        }
-    });
-    
-    dispatch_async(self.queue, ^{
-        if (!self.responseSuccess) {
+        } else {
             requestFailureCompletionBlock(self.errorMessage);
         }
     });
