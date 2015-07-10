@@ -34,7 +34,7 @@
     return @"http://pic.miercn.com/uploads/allimg/150518/40-15051Q51345.jpg";
 }
 
-- (NSString *)downloadTargetFilePathString {
+- (NSString *)downloadTargetFilePath {
     
     NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSLog(@"documentPath = %@", documentPath);

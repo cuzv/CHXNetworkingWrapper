@@ -59,10 +59,6 @@
     return @[@(self.number), self.type];
 }
 
-- (BOOL)requestNeedCache {
-    return NO;
-}
-
 - (NSTimeInterval)requestTimeoutInterval {
     return 2*60;
 }

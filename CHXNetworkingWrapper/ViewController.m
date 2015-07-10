@@ -27,6 +27,7 @@
 #import "ViewController.h"
 #import "CHXPromoteProductListRequest.h"
 #import "CHXDownLoadRequest.h"
+#import "CHXRequest+AsynchronouslyRequest.h"
 
 @interface ViewController ()
 
@@ -41,20 +42,25 @@
 }
 
 - (void)testApi {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
-        [request startRequestWithSuccess:^(id responseObject) {
-            NSLog(@"%@", responseObject);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-            });
-        } failue:^(id errorMessage) {
-            NSLog(@"%@", errorMessage);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-            });
-        }];
-    });
+    
+    CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
+    [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
+        NSLog(@"%@", responseResult);
+        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+    } failureHnadler:^(CHXRequest *request, id reponseMessage) {
+        NSLog(@"%@", reponseMessage);
+        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+    }];
+    
+//    [AFHTTPSessionManager manager].responseSerializer = [AFHTTPResponseSerializer serializer];
+//    [[AFHTTPSessionManager manager] POST:@"http://www.163.com" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+//        NSLog(@"OK");
+//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+//    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+//        NSLog(@"NO");
+//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+//    }];
+    
 }
 
 - (void)testDownload {
@@ -75,6 +81,7 @@
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self testDownload];
+//    [self testDownload];
+    [self testApi];
 }
 @end

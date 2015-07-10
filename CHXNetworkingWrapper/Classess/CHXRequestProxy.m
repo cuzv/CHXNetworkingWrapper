@@ -31,16 +31,14 @@
 #import "CHXResponseCache.h"
 #import "CHXErrorCodeDescription.h"
 #import "NSObject+ObjcRuntime.h"
+#import "CHXRequest+CHXRequestProxy.h"
 
 #pragma mark -
 
 @interface CHXRequestProxy ()
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableDictionary *dataTaskContainer;
-// setup
-@property (nonatomic, copy) NSString *networkReachabilityStatusNotReachable;
-@property (nonatomic, assign) NSUInteger maxConcurrentOperationCount;
-
+@property (nonatomic, copy) void (^networkReachabilityStatusChangeBlock)(AFNetworkReachabilityStatus status);
 @end
 
 @implementation CHXRequestProxy
@@ -56,62 +54,79 @@
 }
 
 - (instancetype)init {
-    if (self = [super init]) {
-        _maxConcurrentOperationCount = 4;
-        _networkReachabilityStatusNotReachable = @"当前网络无连接，请稍候再试！";
-        _enableDebugMode = YES;
-        
-        _sessionManager = [AFHTTPSessionManager manager];
-        _sessionManager.operationQueue.maxConcurrentOperationCount = _maxConcurrentOperationCount;
-        [_sessionManager.reachabilityManager startMonitoring];
-        __weak typeof(self) weakSelf = self;
-        [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            __strong __typeof(weakSelf) strongSelf = weakSelf;
-            if (strongSelf.enableDebugMode) {
-                NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
-            }
-
-        }];
-        _dataTaskContainer = [NSMutableDictionary new];
-        // When background download file complete, but move to target path failure, will post this notification
-        [[NSNotificationCenter defaultCenter] addObserverForName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:nil queue:[NSOperationQueue currentQueue] usingBlock:^(NSNotification *note) {
-            if (_enableDebugMode) {
-                NSLog(@"AFURLSessionDownloadTaskDidFailToMoveFileNotification: %@", note);
-            }
-        }];
+    self = [super init];
+    if (!self) {
+        return nil;
     }
+    
+    _networkNotReachableDescription = @"当前网络无连接，请稍候再试！";
+    _debugMode = YES;
+    
+    _sessionManager = [AFHTTPSessionManager manager];
+    _sessionManager.operationQueue.maxConcurrentOperationCount = 4;
+    [_sessionManager.reachabilityManager startMonitoring];
+    
+    _dataTaskContainer = [NSMutableDictionary new];
+    
+    // Monitor networking status
+    __weak typeof(self) weakSelf = self;
+    [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf.networkReachabilityStatusChangeBlock) {
+            strongSelf.networkReachabilityStatusChangeBlock(status);
+        }
+        if (strongSelf.debugMode) {
+            NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
+        }
+    }];
+    
+    // When background download file complete, but move to target path failure, will post this notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:nil queue:[NSOperationQueue currentQueue] usingBlock:^(NSNotification *note) {
+        if (_debugMode) {
+            NSLog(@"AFURLSessionDownloadTaskDidFailToMoveFileNotification: %@", note);
+        }
+    }];
     
     return self;
 }
 
-/**
- *  `AFNetworkReachabilityManager` first request network status is always `AFNetworkReachabilityStatusUnknown`
- *  So, let it checking before formal request by start a invalid request.
- */
-+ (void)load {
-    [[CHXRequestProxy sharedInstance] addRequest:[CHXRequest new]];
+- (NSUInteger)maxConcurrentOperationCount {
+    return self.sessionManager.operationQueue.maxConcurrentOperationCount;
 }
 
 - (void)setMaxConcurrentOperationCount:(NSUInteger)maxConcurrentOperationCount {
-    _maxConcurrentOperationCount = maxConcurrentOperationCount;
-    _sessionManager.operationQueue.maxConcurrentOperationCount = _maxConcurrentOperationCount;
+    _sessionManager.operationQueue.maxConcurrentOperationCount = maxConcurrentOperationCount;
 }
 
-#pragma mark -
+- (void)setReachabilityStatusChangeBlock:(void (^)(AFNetworkReachabilityStatus status))block {
+    self.networkReachabilityStatusChangeBlock = block;
+}
+
+#pragma mark - Request
 
 - (void)addRequest:(CHXRequest *)request {
     // Checking Networking status
     if (![self pr_isNetworkReachable]) {
+
         // If cache exist, return cache data
         if (![self pr_shouldContinueRequest:request]) {
             return;
         }
+        // `AFNetworkReachabilityManager` first request network status is always `AFNetworkReachabilityStatusUnknown`
+        //  So, retry after 1s.
+        if (request && request.currentRetryCount < 3) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self addRequest:request];
+            });
+            request.currentRetryCount += 1;
+            return;
+        }
         
         // The first time description is not correct !
-        if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+        if ([CHXRequestProxy sharedInstance].debugMode) {
             NSLog(@"The network is currently unreachable.");
         }
-        request.errorMessage = self.networkReachabilityStatusNotReachable;
+        request.reponseMessage = self.networkNotReachableDescription;
         
         // Notify request complete
         [request notifyComplete];
@@ -123,15 +138,23 @@
     NSURLSessionTask *dataTask = nil;
     NSDictionary *requestParameters = nil;
     
-    NSURLRequest *customRULRequest = [request customURLRequest];
+    // Completion handler
+    void (^successHandler)(NSURLSessionDataTask *task, id responseObject) = ^(NSURLSessionDataTask *task, id responseObject) {
+        [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
+    };
+    void (^failureHandler)(NSURLSessionDataTask *task, NSError *error) = ^(NSURLSessionDataTask *task, NSError *error) {
+        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
+    };
+    
+    NSURLRequest *customRULRequest = [request.subclass respondsToSelector:@selector(customURLRequest)] ? [request.subclass customURLRequest] : nil;
     if (customRULRequest) {
         NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
         AFURLSessionManager *sessionManager = [[AFURLSessionManager alloc] initWithSessionConfiguration:sessionConfiguration];
         dataTask = [sessionManager dataTaskWithRequest:customRULRequest completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
             if (error) {
-                [self pr_handleRequestFailureWithSessionDataTask:dataTask error:error];
+                successHandler((NSURLSessionDataTask *)dataTask, responseObject);
             } else {
-                [self pr_handleRequestSuccessWithSessionDataTask:dataTask responseObject:responseObject];
+                successHandler((NSURLSessionDataTask *)dataTask, responseObject);
             }
         }];
         [dataTask resume];
@@ -145,24 +168,25 @@
         }
         
         // HTTP Method
-        CHXRequestMethod requestMethod = [request requestMehtod];
+        CHXRequestMethod requestMethod = [request.subclass requestMehtod];
         NSAssert(requestMethod <= CHXRequestMethodHead, @"Unsupport Request Method");
         NSAssert(requestMethod >= CHXRequestMethodPost, @"Unsupport Request Method");
         
         // HTTP API absolute URL
-        NSString *requestAbsoluteURLString = [request requestURLString];
+        NSString *requestAbsoluteURLString = [request.subclass requestURLPath];
         NSParameterAssert(requestAbsoluteURLString);
         NSParameterAssert(requestAbsoluteURLString.length);
         
         // HTTP POST value block
-        AFConstructingBlock constructingBodyBlock = [request constructingBodyBlock];
+        
+        AFConstructingBlock constructingBodyBlock = [request.subclass respondsToSelector:@selector(constructingBodyBlock)] ? [request.subclass constructingBodyBlock] : nil;
         
         // SerializerType
         [self pr_settingupRequestSerializerTypeByRequest:request];
         [self pr_settingupResponseSerializerTypeByRequest:request];
         
         // HTTP Request parameters
-        requestParameters = [request requestParameters];
+        requestParameters = [request.subclass requestParameters];
         NSParameterAssert(requestParameters);
 
         // Open networking activity indicator
@@ -171,37 +195,30 @@
         switch (requestMethod) {
             case CHXRequestMethodPost: {
                 if (constructingBodyBlock) {
-                    dataTask = [_sessionManager POST:requestAbsoluteURLString parameters:requestParameters constructingBodyWithBlock:constructingBodyBlock success:^(NSURLSessionDataTask *task, id responseObject) {
-                        [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                    }];
+                    dataTask = [self.sessionManager POST:requestAbsoluteURLString parameters:requestParameters constructingBodyWithBlock:constructingBodyBlock success:successHandler failure:failureHandler];
                     
                     // Setup upload progress
-                    void(^block)(CGFloat progress) = [request uploadProgress];
-                    if (block) {
-                        [_sessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
-                            block(totalBytesSent * 1.0f / totalBytesExpectedToSend * 1.0f);
-                        }];
-                        __weak typeof(_sessionManager) weakSessionManager = _sessionManager;
-                        [_sessionManager setTaskDidCompleteBlock:^(NSURLSession *session, NSURLSessionTask *task, NSError *error) {
-                            __strong typeof(weakSessionManager) strongSessionManager = weakSessionManager;
-                            [strongSessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
-                                // Do nothing
-                            }];
-                        }];
+                    void(^block)(CGFloat progress) = [request.subclass respondsToSelector:@selector(uploadProgress)] ? [request.subclass uploadProgress] : nil;
+                    if (!block) {
+                        return;
                     }
-                } else {
-                    dataTask = [_sessionManager POST:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                        [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
+                    [self.sessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+                        block(totalBytesSent * 1.0f / totalBytesExpectedToSend * 1.0f);
                     }];
+                    __weak typeof(self.sessionManager) weakSessionManager = self.sessionManager;
+                    [self.sessionManager setTaskDidCompleteBlock:^(NSURLSession *session, NSURLSessionTask *task, NSError *error) {
+                        __strong typeof(weakSessionManager) strongSessionManager = weakSessionManager;
+                        [strongSessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+                            // Do nothing
+                        }];
+                    }];                    
+                } else {
+                    dataTask = [self.sessionManager POST:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
                 }
             }
                 break;
             case CHXRequestMethodGet: {
-                NSString *downloadTargetFilePath = [request downloadTargetFilePathString];
+                NSString *downloadTargetFilePath = [request.subclass respondsToSelector:@selector(downloadTargetFilePath)]? [request.subclass downloadTargetFilePath] : nil;
                 if (![downloadTargetFilePath hasPrefix:@"file://"]) {
                     downloadTargetFilePath = [@"file://" stringByAppendingString:downloadTargetFilePath];
                 }
@@ -219,15 +236,15 @@
                         return [NSURL URLWithString:downloadTargetFilePath];
                     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
                         if (error) {
-                            [self pr_handleRequestFailureWithSessionDataTask:request.requestSessionTask error:error];
+                            failureHandler((NSURLSessionDataTask *)request.requestSessionTask, error);
                         } else {
                             id object = [self pr_buildResponseObject:filePath forRequest:request];
-                            [self pr_handleRequestSuccessWithSessionDataTask:request.requestSessionTask responseObject:object];
+                            successHandler((NSURLSessionDataTask *)request.requestSessionTask, object);
                         }
                     }];
 
                     // Setup progress callback
-                    void(^block)(CGFloat progress) = [request downloadProgress];
+                    void(^block)(CGFloat progress) = [request.subclass respondsToSelector:@selector(downloadProgress)] ? [request.subclass downloadProgress] : nil;
                     if (block) {
                         [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
                                 block(totalBytesWritten * 1.0f / totalBytesExpectedToWrite * 1.0f);
@@ -240,44 +257,26 @@
                     }];
                     [dataTask resume];
                 } else {
-                    dataTask = [_sessionManager GET:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                        [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                    }];
+                    dataTask = [self.sessionManager GET:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
                 }
             }
                 break;
             case CHXRequestMethodPut: {
-                dataTask = [_sessionManager PUT:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                    [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                }];
+                dataTask = [self.sessionManager PUT:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
             }
                 break;
             case CHXRequestMethodDelete: {
-                dataTask = [_sessionManager DELETE:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                    [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                }];
+                dataTask = [self.sessionManager DELETE:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
             }
                 break;
             case CHXRequestMethodPatch: {
-                dataTask = [_sessionManager PATCH:requestAbsoluteURLString parameters:requestParameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                    [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:responseObject];
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                }];
+                dataTask = [self.sessionManager PATCH:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
             }
                 break;
             case CHXRequestMethodHead: {
-                dataTask = [_sessionManager HEAD:requestAbsoluteURLString parameters:requestAbsoluteURLString success:^(NSURLSessionDataTask *task) {
-                    [self pr_handleRequestSuccessWithSessionDataTask:task responseObject:nil];
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-                }];
+                dataTask = [self.sessionManager HEAD:requestAbsoluteURLString parameters:requestAbsoluteURLString success:^(NSURLSessionDataTask *task) {
+                    successHandler(task, nil);
+                } failure:failureHandler];
             }
                 break;
             default:
@@ -289,10 +288,10 @@
     request.requestSessionTask = dataTask;
     
     // Record the request task
-    _dataTaskContainer[@(dataTask.taskIdentifier)] = request;
+    self.dataTaskContainer[@(dataTask.taskIdentifier)] = request;
     
     // For debug
-    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+    if (self.debugMode) {
         NSLog(@"Request URL: %@", dataTask.currentRequest.URL);
         NSLog(@"Request parameters: %@", requestParameters);
     }
@@ -308,22 +307,24 @@
     
     __weak typeof(self) weakSelf = self;
     [self.dataTaskContainer enumerateKeysAndObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id key, id obj, BOOL *stop) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
         if ([obj isKindOfClass:[CHXRequest class]]) {
             CHXRequest *request = (CHXRequest *)obj;
-            [weakSelf removeRequest:request];
+            [strongSelf removeRequest:request];
         }
     }];
 }
 
-#pragma mark -
+#pragma mark - Private
 
 - (BOOL)pr_isNetworkReachable {
-    return [_sessionManager.reachabilityManager isReachable];
+    return [self.sessionManager.reachabilityManager isReachable];
 }
 
 - (BOOL)pr_shouldContinueRequest:(CHXRequest *)request {
-    // Need cache ?
-    if (![request requestNeedCache]) {
+    // If Need cache means may be data already cached
+    NSTimeInterval cacheTimeInterval = [request.subclass respondsToSelector:@selector(requestCacheDuration)] ? [request.subclass requestCacheDuration] : 0.0f;
+    if (cacheTimeInterval <= 0) {
         return YES;
     }
     
@@ -334,8 +335,7 @@
     }
     
     NSTimeInterval interval = -[cacheResponse.cacheDate timeIntervalSinceNow];
-    NSTimeInterval duration = request.requestCacheDuration;
-    if (interval > duration) {
+    if (interval > cacheTimeInterval) {
         return YES;
     }
     // handle request success
@@ -344,7 +344,7 @@
     // dealloc request
     [self pr_prepareDeallocRequest:request];
     
-    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+    if (self.debugMode) {
         NSLog(@"Retrieve data from cache.");
     }
     
@@ -360,7 +360,8 @@
 }
 
 - (void)pr_cacheIfNeededWithRequest:(CHXRequest *)request responseObject:(id)responseObject {
-    if (![request requestNeedCache]) {
+    NSTimeInterval cacheTimeInterval = [request.subclass respondsToSelector:@selector(requestCacheDuration)] ? [request.subclass requestCacheDuration] : 0.0f;
+    if (cacheTimeInterval <= 0) {
         return;
     }
     
@@ -389,7 +390,7 @@
 }
 
 - (NSString *)pr_requestFileRemoteURLStringWithRequest:(CHXRequest *)request {
-    NSString *originalURLString = [request requestURLString];
+    NSString *originalURLString = [request.subclass requestURLPath];
     NSString *parametersURLString = [self pr_buildParametersToURLStringWithRequest:request];
     NSString *resultURLString = [NSString stringWithString:originalURLString];
     
@@ -406,7 +407,7 @@
 }
 
 - (NSString *)pr_buildParametersToURLStringWithRequest:(CHXRequest *)request {
-    NSDictionary *parameters = request.requestParameters;
+    NSDictionary *parameters = [request.subclass requestParameters];
     
     NSMutableString *parametersURLString = [@"" mutableCopy];
     if (parameters && parameters.count) {
@@ -433,50 +434,52 @@
 }
 
 - (void)pr_settingupRequestSerializerTypeByRequest:(CHXRequest *)request {
-    CHXRequestSerializerType requestSerializerType = [request requestSerializerType];
+    CHXRequestSerializerType requestSerializerType = [request.subclass requestSerializerType];
     NSParameterAssert(requestSerializerType >= CHXRequestSerializerTypeHTTP);
     NSParameterAssert(requestSerializerType <= CHXRequestSerializerTypeJSON);
     
     switch (requestSerializerType) {
         case CHXRequestSerializerTypeJSON:
-            _sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
+            self.sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
             break;
         default:
-            _sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+            self.sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
             break;
     }
     
-    _sessionManager.requestSerializer.timeoutInterval = [request requestTimeoutInterval];
+    self.sessionManager.requestSerializer.timeoutInterval = [request.subclass respondsToSelector:@selector(requestTimeoutInterval)] ?[request.subclass requestTimeoutInterval] : 10.0f;
 }
 
 - (void)pr_settingupResponseSerializerTypeByRequest:(CHXRequest *)request {
-    CHXResponseSerializerType responseSerializerType = [request responseSerializerType];
+    CHXResponseSerializerType responseSerializerType = [request.subclass responseSerializerType];
     NSParameterAssert(responseSerializerType >= CHXResponseSerializerTypeHTTP);
     NSParameterAssert(responseSerializerType <= CHXResponseSerializerTypeImage);
     
     switch (responseSerializerType) {
         case CHXResponseSerializerTypeJSON:
-            _sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+            self.sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
             break;
         case CHXResponseSerializerTypeImage:
-            _sessionManager.responseSerializer = [AFImageResponseSerializer serializer];
+            self.sessionManager.responseSerializer = [AFImageResponseSerializer serializer];
             break;
         default:
-            _sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+            self.sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
             break;
     }
 }
 
+#pragma mark - Handle success
+
 - (void)pr_handleRequestSuccessWithSessionDataTask:(NSURLSessionTask *)task responseObject:(id)responseObject {
-    CHXRequest *request = [_dataTaskContainer objectForKey:@(task.taskIdentifier)];
+    CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
 
     // If retrieve data using JSON, ignore this
     // If retrieve data using form binary data, provide a method convert to Foundation object
-    responseObject = [request responseObjectFromRetrieveData:responseObject];
+    responseObject = [request.subclass respondsToSelector:@selector(responseObjectFromRetrieveData:)] ? [request.subclass responseObjectFromRetrieveData:responseObject] : responseObject;
     NSParameterAssert(responseObject);
 
-    request.response = responseObject;
+    request.responseObject = responseObject;
 
     [self pr_cacheIfNeededWithRequest:request responseObject:responseObject];
     [self pr_handleRequestSuccessWithRequest:request responseObject:responseObject];
@@ -485,65 +488,69 @@
 
 
 - (id)pr_buildResponseObject:(id)responseObject forRequest:(CHXRequest *)request {
-    NSString *responseCodeFieldName = [request responseCodeFieldName];
+    NSString *responseCodeFieldName = [request.subclass responseCodeFieldName];
     NSParameterAssert(responseCodeFieldName);
     NSParameterAssert(responseCodeFieldName.length);
     
-    NSString *responseDataFieldName = [request responseDataFieldName];
-    NSParameterAssert(responseDataFieldName);
-    NSParameterAssert(responseDataFieldName.length);
+    NSString *responseResultFieldName = [request.subclass responseResultFieldName];
+    NSParameterAssert(responseResultFieldName);
+    NSParameterAssert(responseResultFieldName.length);
     
-    NSDictionary *returnObject = @{responseCodeFieldName:@([request responseSuccessCodeValue]), responseDataFieldName:responseObject};
+    NSDictionary *returnObject = @{responseCodeFieldName:@([request.subclass responseSuccessCodeValue]), responseResultFieldName:responseObject};
     
     return returnObject;
 }
 
 - (void)pr_handleRequestSuccessWithRequest:(CHXRequest *)request responseObject:(id)responseObject {
-    NSString *responseCodeFieldName = [request responseCodeFieldName];
+    NSString *responseCodeFieldName = [request.subclass responseCodeFieldName];
     NSParameterAssert(responseCodeFieldName);
     NSParameterAssert(responseCodeFieldName.length);
     
     NSInteger responseCode = [[responseObject objectForKey:responseCodeFieldName] integerValue];
     request.responseCode = responseCode;
     
-    if (responseCode == [request responseSuccessCodeValue]) {
-        NSString *responseDataFieldName = [request responseDataFieldName];
-        NSParameterAssert(responseDataFieldName);
-        NSParameterAssert(responseDataFieldName.length);
+    if (responseCode == [request.subclass responseSuccessCodeValue]) {
+        NSString *responseResultFieldName = [request.subclass responseResultFieldName];
+        NSParameterAssert(responseResultFieldName);
+        NSParameterAssert(responseResultFieldName.length);
         request.responseSuccess = YES;
         
-        id responseData = [responseObject objectForKey:responseDataFieldName];
-        request.responseObject = responseData;
-        if ([CHXRequestProxy sharedInstance].enableDebugMode) {
-            NSLog(@"responseObject: %@", request.responseObject);
+        id responseResult = [responseObject objectForKey:responseResultFieldName];
+        request.responseResult = responseResult;
+        if (self.debugMode) {
+            NSLog(@"responseResult: %@", request.responseResult);
         }
     } else {
-        NSString *responseMessageFieldName = [request responseMessageFieldName];
+        NSString *responseMessageFieldName = [request.subclass responseMessageFieldName];
         NSParameterAssert(responseMessageFieldName);
         NSParameterAssert(responseMessageFieldName.length);
         
         id responseMessage = [responseObject objectForKey:responseMessageFieldName];
-        request.errorMessage = responseMessage;
+        request.reponseMessage = responseMessage;
     }
     
     // Notify request complete
     [request notifyComplete];
 }
 
+#pragma mark - Handle failure
+
 - (void)pr_handleRequestFailureWithSessionDataTask:(NSURLSessionTask *)task error:(NSError *)error {
-    if ([CHXRequestProxy sharedInstance].enableDebugMode) {
+    if (self.debugMode) {
         NSLog(@"Request failure with error: %@", CHXStringFromCFNetworkErrorCode(error.code));
     }
     
-    CHXRequest *request = [_dataTaskContainer objectForKey:@(task.taskIdentifier)];
+    CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.errorMessage = [error localizedDescription];
+    request.reponseMessage = [error localizedDescription];
     
     [request notifyComplete];
     
     [self pr_prepareDeallocRequest:request];
 }
+
+#pragma mark -
 
 - (void)pr_prepareDeallocRequest:(CHXRequest *)request {
     // Remove contain from data task container
@@ -557,7 +564,7 @@
 }
 
 - (void)pr_removeContainForRequest:(CHXRequest *)request {
-    [_dataTaskContainer removeObjectForKey:@(request.requestSessionTask.taskIdentifier)];
+    [self.dataTaskContainer removeObjectForKey:@(request.requestSessionTask.taskIdentifier)];
 }
 
 @end

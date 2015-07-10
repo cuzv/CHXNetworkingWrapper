@@ -26,7 +26,7 @@
 
 #import "CHXRequest.h"
 
-@interface CHXBaseRequest : CHXRequest
+@interface CHXBaseRequest : CHXRequest <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol>
 
 - (NSString *)requestModuleName;
 - (NSString *)requestApiName;

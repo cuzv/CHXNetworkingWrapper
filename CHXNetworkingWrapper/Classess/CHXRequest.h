@@ -26,237 +26,23 @@
 
 #import <Foundation/Foundation.h>
 #import "AFNetworking.h"
-
-// HTTP Method
-typedef NS_ENUM(NSInteger, CHXRequestMethod) {
-    CHXRequestMethodPost = 0,
-    CHXRequestMethodGet,
-    CHXRequestMethodPut,
-    CHXRequestMethodDelete,
-    CHXRequestMethodPatch,
-    CHXRequestMethodHead
-};
-
-typedef NS_ENUM(NSInteger, CHXRequestSerializerType) {
-    CHXRequestSerializerTypeHTTP = 0,
-    CHXRequestSerializerTypeJSON
-};
-
-typedef NS_ENUM(NSInteger, CHXResponseSerializerType) {
-    CHXResponseSerializerTypeHTTP = 0,
-    CHXResponseSerializerTypeJSON,
-    CHXResponseSerializerTypeImage
-};
-
-#pragma mark - Blocks
-
-@class CHXRequest;
-
-typedef void (^RequestSuccessCompletionBlock)(id responseObject);
-typedef void (^RequestFailureCompletionBlock)(id errorMessage);
-typedef void (^RequestCompletionBlock)(id responseObject, id errorMessage);
-typedef void (^RequestCompletionHandle)(CHXRequest *request);
-typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
+#import "CHXRequestConstructProtocol.h"
+#import "CHXRequestRetrieveProtocol.h"
 
 #pragma mark - CHXRequest
 
 // This class collection a request infos what needed, by subclass and override methods
 @interface CHXRequest : NSObject
-@end
 
-#pragma mark - Subclass should overwrite thoese methods
+// This transfer protocol methods response to subclass
+@property (nonatomic, weak, readonly) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
 
-#pragma mark - Request Construct data
-
-@interface CHXRequest (CHXConstruct)
-
-/**
- *  Get assembly request parameters
- *
- *  @return AF request parameters
- */
-- (NSDictionary *)requestParameters;
-
-/**
- *  Server response
- */
-@property (nonatomic, strong) id response;
-
-/**
- *  Get the request URL address
- *
- *  @return URL address
- */
-- (NSString *)requestURLString;
-
-/**
- *  Get the request method
- *
- *  @return request method
- */
-- (CHXRequestMethod)requestMehtod;
-
-/**
- *  Get request paramters serialize type
- *
- *  @return request paramters serialize type
- */
-- (CHXRequestSerializerType)requestSerializerType;
-
-/**
- *  Get POST body data block
- *
- *  @return POST body data block
- */
-- (AFConstructingBlock)constructingBodyBlock;
-
-/**
- *  download file save path, the request method should always be `GET`
- *  Note: make sure the download file save path exist
- *
- *  @return download file save path
- */
-- (NSString *)downloadTargetFilePathString;
-
-/**
- *  download file progress(0~1)
- *
- *  @return progress
- */
-- (void(^)(CGFloat progress))downloadProgress;
-
-/**
- *  upload file progress(0~1)
- *  @rerturn progress
- */
-- (void(^)(CGFloat progress))uploadProgress;
-
-/**
- *  Get the request timeout setup interval
- *
- *  @return timeout interval
- */
-- (NSTimeInterval)requestTimeoutInterval;
-
-/**
- *  Get the custom URLRequest
- *  If return `nil`, ignore `requestParameters, requestBaseURLString,
- *	requestSpecificURLString, requestSuffixURLString, requestMehtod`
- *
- *	@return Custom URLRequest
- */
-- (NSURLRequest *)customURLRequest;
-
-/**
- *  Is there need cache
- *
- *  @return Default value is NO
- */
-- (BOOL)requestNeedCache;
-
-/**
- *  Get cache time interval
- *
- *  @return cache time interval, default value is 3 minutes
- */
-- (NSTimeInterval)requestCacheDuration;
+// When networking is not reachable, retry after 1s, this record how many times have tried.
+@property (nonatomic, assign) NSUInteger currentRetryCount;
 
 @end
 
-
-#pragma mark - Retrieve response data
-
-@interface CHXRequest (CHXRetrieve)
-
-/**
- *  Get response serizlizer type, defined by API maker
- *
- *  @return response serizlizer type
- */
-- (CHXResponseSerializerType)responseSerializerType;
-
-/**
- *  Get the retrieve data api field name
- *
- *  @return retrieve data api field name
- */
-- (NSString *)responseDataFieldName;
-
-/**
- *  Get the retrieve code api field name
- *
- *  @return retrieve code api field name
- */
-- (NSString *)responseCodeFieldName;
-
-/**
- *  Get the response success code field name
- *
- *  @return success code field name
- */
-- (NSInteger)responseSuccessCodeValue;
-
-/**
- *  Get the retrieve message api field name
- *
- *  @return retrieve message api field name
- */
-- (NSString *)responseMessageFieldName;
-
-/**
- *  Convert HTTP response data to Foundation object
- *  If retrieve data using JSON, ignore this
- *  If retrieve data using form binary data, provide a method convert to Foundation object
- *
- *  @param data HTTP  respone data
- *
- *  @return Foundation object
- */
-- (id)responseObjectFromRetrieveData:(id)data;
-
-@end
-
-#pragma mark - Perform
-
-@interface CHXRequest (CHXPerform)
-
-/**
- *  Start a http request
- */
-- (CHXRequest *)startRequest;
-
-/**
- *  Stop the http request
- */
-- (CHXRequest *)stopRequest;
-
-/**
- *  Notify the request is complete
- *  Only invoke by `CHXRequestProxy`
- *  No matter the request is success or not, should invoke this mehod
- */
-- (CHXRequest *)notifyComplete;
-
-@end
-
-#pragma mark - Done asynchronously
-
-@interface CHXRequest (CHXAsynchronously)
-
-- (CHXRequest *)successCompletionResponse:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock;
-- (CHXRequest *)failureCompletionResponse:(RequestFailureCompletionBlock)requestFailureCompletionBlock;
-- (CHXRequest *)completionResponse:(RequestCompletionBlock)requestCompletionBlock;
-- (CHXRequest *)completionHandle:(RequestCompletionHandle)requestCompletionHandle;
-
-@end
-
-#pragma mark - Convenience
-
-@interface CHXRequest (CHXConvenience)
-- (CHXRequest *)startRequestWithSuccess:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock failue:(RequestFailureCompletionBlock)requestFailureCompletionBlock;
-@end
-
-#pragma mark - CHXRequestProxy use
+#pragma mark - CHXRequestProxy retrieve data
 
 @interface CHXRequest ()
 
@@ -266,30 +52,32 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 @property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
 
 /**
- *  Server response
- */
-@property (nonatomic, strong) id response;
-
-/**
- *  Retrieve data, may be nil before the request notify complete
+ *  Server response object, generally contains `code`,  `result`, `message`
  */
 @property (nonatomic, strong) id responseObject;
 
 /**
- *  Retrieve error message, usuall be sent NSString
- *  may be nil before the request notify complete
- */
-@property (nonatomic, strong) id errorMessage;
-
-/**
- *  Is the request response success ?
- */
-@property (nonatomic, assign) BOOL responseSuccess;
-
-/**
  *  Response code
+ *  `[CHXRequestRetrieveProtocol] responseCodeFieldName` value
  */
 @property (nonatomic, assign) NSInteger responseCode;
 
+/**
+ *  Retrieve result data, will be nil before the request notify complete
+ *  `[CHXRequestRetrieveProtocol] responseResultFieldName` value
+ */
+@property (nonatomic, strong) id responseResult;
+
+/**
+ *  Retrieve error message, usuall be sent NSString
+ *  may be nil before the request notify complete
+ *  `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
+ */
+@property (nonatomic, strong) id reponseMessage;
+
+/**
+ *  Is the request response process succeed
+ */
+@property (nonatomic, assign) BOOL responseSuccess;
 
 @end

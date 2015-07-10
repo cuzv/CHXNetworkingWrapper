@@ -24,6 +24,8 @@
 		46373C9F1AEB69170036F596 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C9D1AEB69170036F596 /* NSString+MD5.m */; };
 		46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373CA31AEB697D0036F596 /* CHXBaseRequest.m */; };
 		46373CA71AEB697D0036F596 /* CHXPromoteProductListRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373CA51AEB697D0036F596 /* CHXPromoteProductListRequest.m */; };
+		464E960E1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 464E960D1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.m */; };
+		464E96111B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 464E96101B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.m */; };
 		466C91651B09F87E003674E9 /* CHXDownLoadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 466C91641B09F87E003674E9 /* CHXDownLoadRequest.m */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +40,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4636BBDA1B4FFE89003A2C40 /* CHXNetworkingWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CHXNetworkingWrapper.h; sourceTree = "<group>"; };
+		4636BBDB1B501267003A2C40 /* CHXRequestConstructProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestConstructProtocol.h; sourceTree = "<group>"; };
+		4636BBDC1B501362003A2C40 /* CHXRequestEnum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CHXRequestEnum.h; sourceTree = "<group>"; };
+		4636BBDE1B501F53003A2C40 /* CHXRequestRetrieveProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestRetrieveProtocol.h; sourceTree = "<group>"; };
+		4636BBDF1B5029AB003A2C40 /* CHXRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequest.h; sourceTree = "<group>"; };
 		46373C5F1AEB68E10036F596 /* CHXNetworkingWrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CHXNetworkingWrapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46373C631AEB68E10036F596 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		46373C641AEB68E10036F596 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -54,7 +61,6 @@
 		46373C891AEB69080036F596 /* CHXErrorCodeDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXErrorCodeDescription.h; sourceTree = "<group>"; };
 		46373C8A1AEB69080036F596 /* CHXErrorCodeDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXErrorCodeDescription.m; sourceTree = "<group>"; };
 		46373C8B1AEB69080036F596 /* CHXMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXMacro.h; sourceTree = "<group>"; };
-		46373C8C1AEB69080036F596 /* CHXRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequest.h; sourceTree = "<group>"; };
 		46373C8D1AEB69080036F596 /* CHXRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXRequest.m; sourceTree = "<group>"; };
 		46373C8E1AEB69080036F596 /* CHXRequestProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestProxy.h; sourceTree = "<group>"; };
 		46373C8F1AEB69080036F596 /* CHXRequestProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXRequestProxy.m; sourceTree = "<group>"; };
@@ -70,6 +76,10 @@
 		46373CA31AEB697D0036F596 /* CHXBaseRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXBaseRequest.m; sourceTree = "<group>"; };
 		46373CA41AEB697D0036F596 /* CHXPromoteProductListRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXPromoteProductListRequest.h; sourceTree = "<group>"; };
 		46373CA51AEB697D0036F596 /* CHXPromoteProductListRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXPromoteProductListRequest.m; sourceTree = "<group>"; };
+		464E960C1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CHXRequest+AsynchronouslyRequest.h"; sourceTree = "<group>"; };
+		464E960D1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CHXRequest+AsynchronouslyRequest.m"; sourceTree = "<group>"; };
+		464E960F1B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CHXRequest+CHXRequestProxy.h"; sourceTree = "<group>"; };
+		464E96101B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CHXRequest+CHXRequestProxy.m"; sourceTree = "<group>"; };
 		466C91631B09F87E003674E9 /* CHXDownLoadRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXDownLoadRequest.h; sourceTree = "<group>"; };
 		466C91641B09F87E003674E9 /* CHXDownLoadRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHXDownLoadRequest.m; sourceTree = "<group>"; };
 		7D3A254F9A86087F4FAE5C61 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -165,17 +175,25 @@
 		46373C881AEB69080036F596 /* Classess */ = {
 			isa = PBXGroup;
 			children = (
-				46373C891AEB69080036F596 /* CHXErrorCodeDescription.h */,
-				46373C8A1AEB69080036F596 /* CHXErrorCodeDescription.m */,
+				4636BBDA1B4FFE89003A2C40 /* CHXNetworkingWrapper.h */,
 				46373C8B1AEB69080036F596 /* CHXMacro.h */,
-				46373C8C1AEB69080036F596 /* CHXRequest.h */,
+				4636BBDC1B501362003A2C40 /* CHXRequestEnum.h */,
+				4636BBDB1B501267003A2C40 /* CHXRequestConstructProtocol.h */,
+				4636BBDE1B501F53003A2C40 /* CHXRequestRetrieveProtocol.h */,
+				4636BBDF1B5029AB003A2C40 /* CHXRequest.h */,
 				46373C8D1AEB69080036F596 /* CHXRequest.m */,
+				464E960C1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.h */,
+				464E960D1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.m */,
+				464E960F1B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.h */,
+				464E96101B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.m */,
 				46373C8E1AEB69080036F596 /* CHXRequestProxy.h */,
 				46373C8F1AEB69080036F596 /* CHXRequestProxy.m */,
 				46373C901AEB69080036F596 /* CHXResponseCache.h */,
 				46373C911AEB69080036F596 /* CHXResponseCache.m */,
 				46373C921AEB69080036F596 /* NSObject+ObjcRuntime.h */,
 				46373C931AEB69080036F596 /* NSObject+ObjcRuntime.m */,
+				46373C891AEB69080036F596 /* CHXErrorCodeDescription.h */,
+				46373C8A1AEB69080036F596 /* CHXErrorCodeDescription.m */,
 			);
 			path = Classess;
 			sourceTree = "<group>";
@@ -364,6 +382,7 @@
 			files = (
 				46373C9E1AEB69170036F596 /* NSDataExtension.m in Sources */,
 				46373C941AEB69080036F596 /* CHXErrorCodeDescription.m in Sources */,
+				464E96111B503D0900A4B1DC /* CHXRequest+CHXRequestProxy.m in Sources */,
 				46373C9F1AEB69170036F596 /* NSString+MD5.m in Sources */,
 				46373C6B1AEB68E10036F596 /* ViewController.m in Sources */,
 				46373CA71AEB697D0036F596 /* CHXPromoteProductListRequest.m in Sources */,
@@ -372,6 +391,7 @@
 				46373C961AEB69080036F596 /* CHXRequestProxy.m in Sources */,
 				46373C971AEB69080036F596 /* CHXResponseCache.m in Sources */,
 				46373C981AEB69080036F596 /* NSObject+ObjcRuntime.m in Sources */,
+				464E960E1B503C1200A4B1DC /* CHXRequest+AsynchronouslyRequest.m in Sources */,
 				466C91651B09F87E003674E9 /* CHXDownLoadRequest.m in Sources */,
 				46373C651AEB68E10036F596 /* main.m in Sources */,
 				46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */,

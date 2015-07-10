@@ -44,9 +44,9 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 @implementation CHXBaseRequest
 
-#pragma mark - Request parameters
+#pragma mark - CHXRequestConstructProtocol
 
-- (NSString *)requestURLString {
+- (NSString *)requestURLPath {
     NSMutableString *url = [NSMutableString new];
     [url appendString:@"http://"];
     [url appendString:[self requestModuleName]];
@@ -82,11 +82,11 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return CHXRequestSerializerTypeHTTP;
 }
 
-- (BOOL)requestNeedCache {
+- (BOOL)requestDemandCache {
     return NO;
 }
 
-#pragma mark - Response fields
+#pragma mark - CHXRequestRetrieveProtocol
 
 - (CHXResponseSerializerType)responseSerializerType {
     return CHXResponseSerializerTypeHTTP;
@@ -100,7 +100,7 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return 0;
 }
 
-- (NSString *)responseDataFieldName {
+- (NSString *)responseResultFieldName {
     return @"result";
 }
 
@@ -165,5 +165,10 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 - (NSArray *)requestSortedParmeters {
     return nil;
 }
+
+
+
+
+
 
 @end
