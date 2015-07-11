@@ -126,7 +126,7 @@
         if ([CHXRequestProxy sharedInstance].debugMode) {
             NSLog(@"The network is currently unreachable.");
         }
-        request.reponseMessage = self.networkNotReachableDescription;
+        request.responseMessage = self.networkNotReachableDescription;
         
         // Notify request complete
         [request notifyComplete];
@@ -526,7 +526,7 @@
         NSParameterAssert(responseMessageFieldName.length);
         
         id responseMessage = [responseObject objectForKey:responseMessageFieldName];
-        request.reponseMessage = responseMessage;
+        request.responseMessage = responseMessage;
     }
     
     // Notify request complete
@@ -543,7 +543,7 @@
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.reponseMessage = [error localizedDescription];
+    request.responseMessage = [error localizedDescription];
     
     [request notifyComplete];
     

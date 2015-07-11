@@ -73,7 +73,7 @@
  *  may be nil before the request notify complete
  *  `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
  */
-@property (nonatomic, strong) id reponseMessage;
+@property (nonatomic, strong) id responseMessage;
 
 /**
  *  Is the request response process succeed

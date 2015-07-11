@@ -30,7 +30,7 @@
 
 - (CHXRequest *)failureCompletionResponse:(RequestFailureCompletionBlock)requestFailureCompletionBlock {
     dispatch_async(self.queue, ^{
-        requestFailureCompletionBlock(self.reponseMessage);
+        requestFailureCompletionBlock(self.responseMessage);
     });
     
     return self;
@@ -38,7 +38,7 @@
 
 - (CHXRequest *)completionResponse:(RequestCompletionBlock)requestCompletionBlock {
     dispatch_async(self.queue, ^{
-        requestCompletionBlock(self.responseResult, self.reponseMessage);
+        requestCompletionBlock(self.responseResult, self.responseMessage);
     });
     
     return self;
@@ -69,7 +69,7 @@
 - (CHXRequest *)failureHnadler:(RequestFailureHandler)failureHnadler {
     dispatch_async(self.queue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            failureHnadler(self, self.reponseMessage);
+            failureHnadler(self, self.responseMessage);
         });
     });
     
@@ -86,7 +86,7 @@
         if (self.responseSuccess) {
             requestSuccessCompletionBlock(self.responseResult);
         } else {
-            requestFailureCompletionBlock(self.reponseMessage);
+            requestFailureCompletionBlock(self.responseMessage);
         }
     });
     
@@ -101,7 +101,7 @@
             if (self.responseSuccess) {
                 successHandler(self, self.responseResult);
             } else {
-                failureHnadler(self, self.reponseMessage);
+                failureHnadler(self, self.responseMessage);
             }
         });
     });
