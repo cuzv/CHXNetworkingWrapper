@@ -47,7 +47,7 @@
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
         NSLog(@"%@", responseResult);
         [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
-    } failureHnadler:^(CHXRequest *request, id reponseMessage) {
+    } failureHandler:^(CHXRequest *request, id reponseMessage) {
         NSLog(@"%@", reponseMessage);
         [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
     }];

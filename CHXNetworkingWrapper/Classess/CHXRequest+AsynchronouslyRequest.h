@@ -35,11 +35,11 @@ typedef void (^RequestFailureHandler)(CHXRequest *request, id reponseMessage);
 
 // Deprecated: deliver on backend thread
 - (CHXRequest *)startRequestWithSuccess:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock
-                                 failue:(RequestFailureCompletionBlock)requestFailureCompletionBlock
-                                 __attribute__((deprecated("use startRequestWithSuccessHandler:failureHnadler instead")));
+                                 failure:(RequestFailureCompletionBlock)requestFailureCompletionBlock
+                                 __attribute__((deprecated("use startRequestWithSuccessHandler:failureHandler instead")));
 
 // Preferred: deliver on main thread
 - (CHXRequest *)startRequestWithSuccessHandler:(RequestSuccessHandler)successHandler
-                                failureHnadler:(RequestFailureHandler)failureHnadler;
+                                failureHandler:(RequestFailureHandler)failureHandler;
 
 @end

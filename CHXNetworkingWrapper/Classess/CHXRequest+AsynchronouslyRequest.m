@@ -78,10 +78,10 @@
 
 
 - (CHXRequest *)startRequestWithSuccess:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock
-                                 failue:(RequestFailureCompletionBlock)requestFailureCompletionBlock
-                                 __attribute__((deprecated("use "))) {
+                                 failure:(RequestFailureCompletionBlock)requestFailureCompletionBlock
+                                 __attribute__((deprecated("use startRequestWithSuccessHandler:failureHandler instead"))) {
     [self startRequest];
-    
+
     dispatch_async(self.queue, ^{
         if (self.responseSuccess) {
             requestSuccessCompletionBlock(self.responseResult);
@@ -94,14 +94,14 @@
 }
 
 - (CHXRequest *)startRequestWithSuccessHandler:(RequestSuccessHandler)successHandler
-                                failureHnadler:(RequestFailureHandler)failureHnadler {
+                                failureHandler:(RequestFailureHandler)failureHandler {
     [self startRequest];
     dispatch_async(self.queue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.responseSuccess) {
                 successHandler(self, self.responseResult);
             } else {
-                failureHnadler(self, self.responseMessage);
+                failureHandler(self, self.responseMessage);
             }
         });
     });
