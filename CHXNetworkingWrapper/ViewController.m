@@ -72,7 +72,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
         });
         
-    } failue:^(id errorMessage) {
+    } failure:^(id errorMessage) {
         NSLog(@"%@", errorMessage);
         dispatch_async(dispatch_get_main_queue(), ^{
             
