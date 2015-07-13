@@ -35,6 +35,10 @@
 
 @implementation CHXPromoteProductListRequest
 
+- (void)dealloc {
+    NSLog(@"%s", __FUNCTION__);
+}
+
 - (instancetype)initWithNumber:(NSInteger)number type:(NSString *)type {
     if (self = [super init]) {
         _number = number;

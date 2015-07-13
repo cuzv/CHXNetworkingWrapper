@@ -25,16 +25,23 @@
 //
 
 #import "CHXRequest.h"
-#import "CHXRequestProxy.h"
+#import "CHXRequestCommand.h"
 #import "CHXMacro.h"
 #import "NSObject+ObjcRuntime.h"
 
 @interface CHXRequest ()
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, weak, readwrite) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
+// Private
+@property (nonatomic, assign, readwrite) NSUInteger currentRetryCount;
+@property (nonatomic, strong, readwrite) NSURLSessionTask *requestSessionTask;
 @end
 
 @implementation CHXRequest
+
+- (void)dealloc {
+    NSLog(@"%s", __FUNCTION__);
+}
 
 #pragma mark - Hash
 
@@ -61,7 +68,10 @@
 }
 
 - (NSUInteger)hash {
-    NSArray *propertyArray = [self objc_properties];
+    NSMutableArray *propertyArray = [[self objc_properties] mutableCopy];
+    if ([propertyArray containsObject:@"hash"]) {
+        [propertyArray removeObject:@"hash"];
+    }
     __block NSUInteger hashCode = 0;
     [propertyArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         hashCode ^= [[self valueForKey:obj] hash];
@@ -83,6 +93,31 @@
         self.subclass = (id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol>) self;
     } else {
         NSAssert(NO, @"subclass must conforms CHXRequestConstructProtocol and CHXRequestRetrieveProtocol");
+    }
+    
+    return self;
+}
+
+#pragma mark - CHXRequest+Private
+
+- (CHXRequest *)initializeQueueIfNeeded {
+    if (self.queue) {
+        return self;
+    }
+    
+    self.queue = ({
+        NSString *queueLabel = [NSString stringWithFormat:@"xiao.moch.queueidentifier.%zd", [self hash]];
+        dispatch_queue_t queue = dispatch_queue_create([queueLabel UTF8String], DISPATCH_QUEUE_SERIAL);
+        dispatch_suspend(queue);
+        queue;
+    });
+
+    return self;
+}
+
+- (CHXRequest *)notifyComplete {
+    if (self.queue) {
+        dispatch_resume(self.queue);
     }
     
     return self;

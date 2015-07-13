@@ -28,28 +28,21 @@
 #import "AFNetworking.h"
 #import "CHXRequestConstructProtocol.h"
 #import "CHXRequestRetrieveProtocol.h"
+#import "CHXRequestCommandProtocol.h"
 
 #pragma mark - CHXRequest
 
 // This class collection a request infos what needed, by subclass and override methods
 @interface CHXRequest : NSObject
 
-// This transfer protocol methods response to subclass
-@property (nonatomic, weak, readonly) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
-
-// When networking is not reachable, retry after 1s, this record how many times have tried.
-@property (nonatomic, assign) NSUInteger currentRetryCount;
+// The command, Before start requst, inject command first
+@property (nonatomic, weak) id <CHXRequestCommandProtocol> command;
 
 @end
 
-#pragma mark - CHXRequestProxy retrieve data
+#pragma mark - CHXRequestCommand retrieve data
 
 @interface CHXRequest ()
-
-/**
- *  Hold on request task, only invoke by `CHXRequestProxy`
- */
-@property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
 
 /**
  *  Server response object, generally contains `code`,  `result`, `message`

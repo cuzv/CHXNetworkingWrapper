@@ -1,22 +1,21 @@
 //
-//  CHXRequest+AsynchronouslyRequest.m
+//  CHXRequest+ResponseHandler.m
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 7/11/15.
 //  Copyright (c) 2015 Moch Xiao. All rights reserved.
 //
 
-#import "CHXRequest+AsynchronouslyRequest.h"
-#import "CHXRequest+CHXRequestProxy.h"
+#import "CHXRequest+ResponseHandler.h"
+#import "CHXRequest+CHXRequestCommand.h"
 
 @interface CHXRequest ()
 @property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
-
 #pragma mark -
 
-@implementation CHXRequest (AsynchronouslyRequest)
+@implementation CHXRequest (ResponseHandler)
 
 #pragma mark Deprecated
 
@@ -96,6 +95,7 @@
 - (CHXRequest *)startRequestWithSuccessHandler:(RequestSuccessHandler)successHandler
                                 failureHandler:(RequestFailureHandler)failureHandler {
     [self startRequest];
+    
     dispatch_async(self.queue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.responseSuccess) {

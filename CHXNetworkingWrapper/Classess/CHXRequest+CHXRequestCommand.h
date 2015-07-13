@@ -1,5 +1,5 @@
 //
-//  CHXRequest+CHXRequestProxy.h
+//  CHXRequest+CHXRequestCommand.h
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 7/11/15.
@@ -8,23 +8,28 @@
 
 #import "CHXRequest.h"
 
-@interface CHXRequest (CHXRequestProxy)
+@interface CHXRequest (CHXRequestCommand)
 
 /**
  *  Start a http request
+ *
+ *  @return Self
  */
 - (CHXRequest *)startRequest;
 
 /**
  *  Stop the http request
+ *
+ *  @return Self
  */
 - (CHXRequest *)stopRequest;
 
 /**
- *  Notify the request is complete
- *  Only invoke by `CHXRequestProxy`
- *  No matter the request is success or failure, will invoke this method
+ *  Stop all the http request
+ *
+ *  @return Self
  */
-- (CHXRequest *)notifyComplete;
+- (CHXRequest *)stopAllRequest;
+
 
 @end

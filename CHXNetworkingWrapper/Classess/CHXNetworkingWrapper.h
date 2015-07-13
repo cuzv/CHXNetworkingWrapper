@@ -13,10 +13,10 @@
 #import "CHXRequestConstructProtocol.h"
 #import "CHXRequestRetrieveProtocol.h"
 #import "CHXRequest.h"
-#import "CHXRequestProxy.h"
+#import "CHXRequestCommand.h"
 #import "CHXErrorCodeDescription.h"
-#import "CHXRequest+AsynchronouslyRequest.h"
-#import "CHXRequest+CHXRequestProxy.h"
+#import "CHXRequest+ResponseHandler.h"
+#import "CHXRequest+CHXRequestCommand.h"
 #import "CHXErrorCodeDescription.h"
 
 #endif

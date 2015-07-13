@@ -1,5 +1,5 @@
 //
-//  CHXRequestProxy.h
+//  CHXRequestCommand.h
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
@@ -26,12 +26,18 @@
 
 #import <Foundation/Foundation.h>
 #import "AFNetworkReachabilityManager.h"
+#import "CHXRequestCommandProtocol.h"
 
 @class CHXRequest;
 
-@interface CHXRequestProxy : NSObject
+@interface CHXRequestCommand : NSObject <CHXRequestCommandProtocol>
 
-#pragma mark - Setup
+/**
+ *  CHXRequestCommand shared instance
+ *
+ *  @return Shared instance
+ */
++ (instancetype)sharedInstance;
 
 /**
  *  When YES, will print request info and response info on terminal
@@ -55,33 +61,6 @@
  */
 - (void)setReachabilityStatusChangeBlock:(void (^)(AFNetworkReachabilityStatus status))block;
 
-#pragma mark - Request
-
-/**
- *  CHXRequestProxy shared instance
- *
- *  @return Shared instance
- */
-+ (instancetype)sharedInstance;
-
-/**
- *  Add a request task
- *
- *  @param the request task
- */
-- (void)addRequest:(CHXRequest *)request;
-
-/**
- *  Cancel request task
- *
- *  @param request the cancel task
- */
-- (void)removeRequest:(CHXRequest *)request;
-
-/**
- *  Cancel all request task
- */
-- (void)removeAllRequest;
 
 @end
 

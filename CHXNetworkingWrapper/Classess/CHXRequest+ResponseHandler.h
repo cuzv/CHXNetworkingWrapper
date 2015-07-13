@@ -1,5 +1,5 @@
 //
-//  CHXRequest+AsynchronouslyRequest.h
+//  CHXRequest+ResponseHandler.h
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 7/11/15.
@@ -18,7 +18,7 @@ typedef void (^RequestCompletionHandler)(CHXRequest *request, id responseObject)
 typedef void (^RequestSuccessHandler)(CHXRequest *request, id responseResult);
 typedef void (^RequestFailureHandler)(CHXRequest *request, id reponseMessage);
 
-@interface CHXRequest (AsynchronouslyRequest)
+@interface CHXRequest (ResponseHandler)
 
 // Deprecated: deliver on backend thread
 - (CHXRequest *)successCompletionResponse:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock

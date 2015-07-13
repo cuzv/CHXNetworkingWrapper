@@ -30,7 +30,7 @@
     return @{};
 }
 
-- (NSString *)requestURLString {
+- (NSString *)requestURLPath {
     return @"http://pic.miercn.com/uploads/allimg/150518/40-15051Q51345.jpg";
 }
 
@@ -57,12 +57,24 @@
     return 0;
 }
 
-- (NSString *)responseDataFieldName {
+- (NSString *)responseResultFieldName {
     return @"result";
 }
 
 - (NSString *)responseMessageFieldName {
     return @"msg";
+}
+
+- (CHXRequestSerializerType)requestSerializerType {
+    return CHXRequestSerializerTypeHTTP;
+}
+
+- (CHXResponseSerializerType)responseSerializerType {
+    return CHXResponseSerializerTypeHTTP;
+}
+
+- (id)responseObjectFromRetrieveData:(id)data {
+    return data;
 }
 
 

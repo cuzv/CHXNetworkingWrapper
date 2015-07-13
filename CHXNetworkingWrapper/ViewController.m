@@ -27,7 +27,7 @@
 #import "ViewController.h"
 #import "CHXPromoteProductListRequest.h"
 #import "CHXDownLoadRequest.h"
-#import "CHXRequest+AsynchronouslyRequest.h"
+#import "CHXNetworkingWrapper.h"
 
 @interface ViewController ()
 
@@ -38,7 +38,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self testApi];
+//    [self testApi];
+    
+    [self testDownload];
 }
 
 - (void)testApi {
@@ -46,11 +48,12 @@
     CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
         NSLog(@"%@", responseResult);
-        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
     } failureHandler:^(CHXRequest *request, id reponseMessage) {
         NSLog(@"%@", reponseMessage);
-        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
+//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
     }];
+
     
 //    [AFHTTPSessionManager manager].responseSerializer = [AFHTTPResponseSerializer serializer];
 //    [[AFHTTPSessionManager manager] POST:@"http://www.163.com" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -67,21 +70,20 @@
     CHXDownLoadRequest *down = [[CHXDownLoadRequest new] initWithDownloadProgress:^(CGFloat progress) {
         NSLog(@"progress = %f", progress);
     }];
-    [down startRequestWithSuccess:^(id responseObject) {
-        NSLog(@"%@", responseObject);
-        dispatch_async(dispatch_get_main_queue(), ^{
-        });
-        
-    } failure:^(id errorMessage) {
-        NSLog(@"%@", errorMessage);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-        });
-    }];
+    [down startRequest];
+//    [down startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
+//        NSLog(@"%@", responseResult);
+//    } failureHandler:^(CHXRequest *request, id reponseMessage) {
+//        NSLog(@"%@", reponseMessage);
+//    }];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //    [self testDownload];
+    
+    for (int i = 0; i < 10; i++) {
+        [self testApi];
+    }
     [self testApi];
 }
 @end

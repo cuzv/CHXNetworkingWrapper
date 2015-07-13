@@ -1,5 +1,5 @@
 //
-//  CHXRequestProxy.m
+//  CHXRequestCommand.m
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
@@ -24,27 +24,29 @@
 //  THE SOFTWARE.
 //
 
-#import "CHXRequestProxy.h"
+#import "CHXRequestCommand.h"
 #import "AFNetworking.h"
 #import "CHXMacro.h"
 #import "CHXRequest.h"
 #import "CHXResponseCache.h"
 #import "CHXErrorCodeDescription.h"
 #import "NSObject+ObjcRuntime.h"
-#import "CHXRequest+CHXRequestProxy.h"
+#import "CHXRequest+CHXRequestCommand.h"
+#import "CHXRequest+Private.h"
 
 #pragma mark -
 
-@interface CHXRequestProxy ()
+@interface CHXRequestCommand ()
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableDictionary *dataTaskContainer;
 @property (nonatomic, copy) void (^networkReachabilityStatusChangeBlock)(AFNetworkReachabilityStatus status);
+@property (nonatomic, copy) void (^completionHandler)(void);
 @end
 
-@implementation CHXRequestProxy
+@implementation CHXRequestCommand
 
 + (instancetype)sharedInstance {
-    static CHXRequestProxy *_sharedInstance;
+    static CHXRequestCommand *_sharedInstance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedInstance = [self new];
@@ -102,7 +104,7 @@
     self.networkReachabilityStatusChangeBlock = block;
 }
 
-#pragma mark - Request
+#pragma mark - CHXRequestCommandProtocol
 
 - (void)addRequest:(CHXRequest *)request {
     // Checking Networking status
@@ -123,7 +125,7 @@
         }
         
         // The first time description is not correct !
-        if ([CHXRequestProxy sharedInstance].debugMode) {
+        if ([CHXRequestCommand sharedInstance].debugMode) {
             NSLog(@"The network is currently unreachable.");
         }
         request.responseMessage = self.networkNotReachableDescription;
@@ -299,7 +301,7 @@
 
 - (void)removeRequest:(CHXRequest *)request {
     [request.requestSessionTask cancel];
-      [self pr_prepareDeallocRequest:request];
+    [self pr_prepareDeallocRequest:request];
 }
 
 - (void)removeAllRequest {
@@ -558,6 +560,8 @@
     
     // Break retain data task
     request.requestSessionTask = nil;
+    
+    request.command = nil;
     
     // Close networking activity indicator
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];

@@ -7,7 +7,8 @@
 //
 
 #import "CHXRequest.h"
+#import "CHXBaseRequest.h"
 
-@interface CHXDownLoadRequest : CHXRequest
+@interface CHXDownLoadRequest : CHXRequest <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol>
 - (instancetype)initWithDownloadProgress:(void(^)(CGFloat progress))downloadProgress;
 @end
