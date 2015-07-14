@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		397FE4BC09DA875774833ABE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F11297AE44BC0B398033C6E /* libPods.a */; };
-		462368251B54153100F41ADE /* CHXRequest+Global.m in Sources */ = {isa = PBXBuildFile; fileRef = 462368241B54153100F41ADE /* CHXRequest+Global.m */; };
-		462368271B54225500F41ADE /* CHXRequest+Private.h in Sources */ = {isa = PBXBuildFile; fileRef = 462368261B54225500F41ADE /* CHXRequest+Private.h */; };
 		46373C651AEB68E10036F596 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C641AEB68E10036F596 /* main.m */; };
 		46373C681AEB68E10036F596 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C671AEB68E10036F596 /* AppDelegate.m */; };
 		46373C6B1AEB68E10036F596 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46373C6A1AEB68E10036F596 /* ViewController.m */; };
@@ -43,8 +41,6 @@
 
 /* Begin PBXFileReference section */
 		462368221B540EBF00F41ADE /* CHXRequestCommandProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestCommandProtocol.h; sourceTree = "<group>"; };
-		462368231B54153100F41ADE /* CHXRequest+Global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CHXRequest+Global.h"; sourceTree = "<group>"; };
-		462368241B54153100F41ADE /* CHXRequest+Global.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CHXRequest+Global.m"; sourceTree = "<group>"; };
 		462368261B54225500F41ADE /* CHXRequest+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CHXRequest+Private.h"; sourceTree = "<group>"; };
 		4636BBDA1B4FFE89003A2C40 /* CHXNetworkingWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CHXNetworkingWrapper.h; sourceTree = "<group>"; };
 		4636BBDB1B501267003A2C40 /* CHXRequestConstructProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHXRequestConstructProtocol.h; sourceTree = "<group>"; };
@@ -193,8 +189,6 @@
 				464E960D1B503C1200A4B1DC /* CHXRequest+ResponseHandler.m */,
 				464E960F1B503D0900A4B1DC /* CHXRequest+CHXRequestCommand.h */,
 				464E96101B503D0900A4B1DC /* CHXRequest+CHXRequestCommand.m */,
-				462368231B54153100F41ADE /* CHXRequest+Global.h */,
-				462368241B54153100F41ADE /* CHXRequest+Global.m */,
 				462368221B540EBF00F41ADE /* CHXRequestCommandProtocol.h */,
 				46373C8E1AEB69080036F596 /* CHXRequestCommand.h */,
 				46373C8F1AEB69080036F596 /* CHXRequestCommand.m */,
@@ -396,14 +390,12 @@
 				46373C9F1AEB69170036F596 /* NSString+MD5.m in Sources */,
 				46373C6B1AEB68E10036F596 /* ViewController.m in Sources */,
 				46373CA71AEB697D0036F596 /* CHXPromoteProductListRequest.m in Sources */,
-				462368251B54153100F41ADE /* CHXRequest+Global.m in Sources */,
 				46373C951AEB69080036F596 /* CHXRequest.m in Sources */,
 				46373C681AEB68E10036F596 /* AppDelegate.m in Sources */,
 				46373C961AEB69080036F596 /* CHXRequestCommand.m in Sources */,
 				46373C971AEB69080036F596 /* CHXResponseCache.m in Sources */,
 				46373C981AEB69080036F596 /* NSObject+ObjcRuntime.m in Sources */,
 				464E960E1B503C1200A4B1DC /* CHXRequest+ResponseHandler.m in Sources */,
-				462368271B54225500F41ADE /* CHXRequest+Private.h in Sources */,
 				466C91651B09F87E003674E9 /* CHXDownLoadRequest.m in Sources */,
 				46373C651AEB68E10036F596 /* main.m in Sources */,
 				46373CA61AEB697D0036F596 /* CHXBaseRequest.m in Sources */,
@@ -537,6 +529,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = CHXNetworkingWrapper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"Pods-AFNetworking\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -548,6 +553,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = CHXNetworkingWrapper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"Pods-AFNetworking\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

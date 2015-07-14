@@ -7,6 +7,7 @@
 //
 
 #import "CHXDownLoadRequest.h"
+#import "CHXNetworkingWrapper.h"
 
 @interface CHXDownLoadRequest ()
 @property (nonatomic, copy) void (^downloadProgress)(CGFloat progress);
@@ -14,6 +15,10 @@
 @end
 
 @implementation CHXDownLoadRequest
+
+- (id <CHXRequestCommandProtocol>)command {
+    return [CHXRequestCommand sharedInstance];
+}
 
 - (instancetype)initWithDownloadProgress:(void(^)(CGFloat progress))downloadProgress {
     self = [super init];
@@ -41,7 +46,7 @@
     return [documentPath stringByAppendingString:@"/download.jpg"];
 }
 
-- (CHXRequestMethod)requestMehtod {
+- (CHXRequestMethod)requestMethod {
     return CHXRequestMethodGet;
 }
 

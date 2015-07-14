@@ -30,11 +30,13 @@
 #import "NSObject+ObjcRuntime.h"
 
 @interface CHXRequest ()
-@property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, weak, readwrite) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
+
 // Private
 @property (nonatomic, assign, readwrite) NSUInteger currentRetryCount;
 @property (nonatomic, strong, readwrite) NSURLSessionTask *requestSessionTask;
+@property (nonatomic, strong) dispatch_queue_t queue;
+
 @end
 
 @implementation CHXRequest

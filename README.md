@@ -20,15 +20,15 @@ You can install CHXNetworkingWrapper using [CocoaPods](http://cocoapods.org/)
 
 ## Getting started
 
-- subclass `CHXRequest`
-- overload `@interface CHXRequest (CHXConstruct)` methods, gather request data
-- overload `@interface CHXRequest (CHXRetrieve)` methods setting response configure
-- call `CHXRequest (CHXAsynchronously)` method and `startRequest` method start a request
-- Or using `@interface CHXRequest (CHXConvenience)` methods start a request
+- Subclass `CHXRequest`
+- Conforms `CHXRequestConstructProtocol`, `CHXRequestRetrieveProtocol`
+- Inject `command` by `CHXRequest`'s property
+- Call `CHXRequest (CHXRequestCommand)` method and `startRequest` method start a request
+- Or using `@interface CHXRequest (ResponseHandler)` methods start a request and get response
 
 ## Others
 
-- checkout Sample or send me a issue
+- Checkout Sample or send me a issue
 - Pull request is always welcome
 
 ## Refrence

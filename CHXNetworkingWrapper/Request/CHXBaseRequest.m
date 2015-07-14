@@ -27,6 +27,7 @@
 #import "CHXBaseRequest.h"
 #import "NSDataExtension.h"
 #import "NSString+MD5.h"
+#import "CHXNetworkingWrapper.h"
 
 static const NSString *kUser = @"haioo";
 NSString * const kSecrectKey = @"Ka48qGTlf00PSoNnZwM3Rx8PG2oOs1RK";
@@ -43,6 +44,10 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 
 @implementation CHXBaseRequest
+
+- (id <CHXRequestCommandProtocol>)command {
+    return [CHXRequestCommand sharedInstance];
+}
 
 #pragma mark - CHXRequestConstructProtocol
 
@@ -74,7 +79,7 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return @{@"data": jsonString};
 }
 
-- (CHXRequestMethod)requestMehtod {
+- (CHXRequestMethod)requestMethod {
     return CHXRequestMethodPost;
 }
 

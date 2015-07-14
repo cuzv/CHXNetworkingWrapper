@@ -69,7 +69,7 @@
     [_sessionManager.reachabilityManager startMonitoring];
     
     _dataTaskContainer = [NSMutableDictionary new];
-    
+
     // Monitor networking status
     __weak typeof(self) weakSelf = self;
     [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
@@ -170,7 +170,7 @@
         }
         
         // HTTP Method
-        CHXRequestMethod requestMethod = [request.subclass requestMehtod];
+        CHXRequestMethod requestMethod = [request.subclass requestMethod];
         NSAssert(requestMethod <= CHXRequestMethodHead, @"Unsupport Request Method");
         NSAssert(requestMethod >= CHXRequestMethodPost, @"Unsupport Request Method");
         

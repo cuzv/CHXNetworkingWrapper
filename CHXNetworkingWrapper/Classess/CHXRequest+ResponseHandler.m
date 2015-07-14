@@ -8,9 +8,9 @@
 
 #import "CHXRequest+ResponseHandler.h"
 #import "CHXRequest+CHXRequestCommand.h"
+#import "CHXRequest+Private.h"
 
 @interface CHXRequest ()
-@property (nonatomic, strong) dispatch_queue_t queue;
 @end
 
 #pragma mark -

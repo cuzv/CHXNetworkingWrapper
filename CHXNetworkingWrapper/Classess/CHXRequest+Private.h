@@ -20,6 +20,10 @@
 // Hold on request task, only invoke by `CHXRequestCommand`
 @property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
 
+// The event notify queue
+@property (nonatomic, strong) dispatch_queue_t queue;
+
+
 /**
  *  Initialze dispatch_queue
  *

@@ -34,7 +34,7 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
  *
  *  @return request method
  */
-- (CHXRequestMethod)requestMehtod;
+- (CHXRequestMethod)requestMethod;
 
 /**
  *  Get request paramters serialize type
