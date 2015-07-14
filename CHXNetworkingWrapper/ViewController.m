@@ -29,17 +29,30 @@
 #import "CHXDownLoadRequest.h"
 #import "CHXNetworkingWrapper.h"
 
-@interface ViewController ()
+@interface ViewController () <UITableViewDelegate, UICollectionViewDelegate>
 
 @end
 
 @implementation ViewController
 
+#pragma mark - respondsToSelector
+
+- (instancetype)init {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    return self;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
 //    [self testApi];
-    
+
+
     [self testDownload];
 }
 
@@ -86,4 +99,6 @@
     }
     [self testApi];
 }
+
+
 @end

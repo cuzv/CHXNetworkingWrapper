@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "CHXRequestEnum.h"
 
+@protocol AFMultipartFormData;
 typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 
 @protocol CHXRequestConstructProtocol <NSObject>
