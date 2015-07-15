@@ -78,7 +78,7 @@
             strongSelf.networkReachabilityStatusChangeBlock(status);
         }
         if (strongSelf.debugMode) {
-            NSLog(@"AFNetworkReachabilityStatus: %@", AFStringFromNetworkReachabilityStatus(status));
+            NSLog(@"-- --- --- --- : AFNetworkReachabilityStatus: %@ : --- --- --- --", AFStringFromNetworkReachabilityStatus(status));
         }
     }];
     
@@ -126,7 +126,7 @@
         
         // The first time description is not correct !
         if ([CHXRequestCommand sharedInstance].debugMode) {
-            NSLog(@"The network is currently unreachable.");
+            NSLog(@"-- --- --- --- : The network is currently unreachable : --- --- --- --");
         }
         request.responseMessage = self.networkNotReachableDescription;
         
@@ -171,8 +171,8 @@
         
         // HTTP Method
         CHXRequestMethod requestMethod = [request.subclass requestMethod];
-        NSAssert(requestMethod <= CHXRequestMethodHead, @"Unsupport Request Method");
-        NSAssert(requestMethod >= CHXRequestMethodPost, @"Unsupport Request Method");
+        NSAssert(requestMethod <= CHXRequestMethodHead, @"-- --- --- --- : Unsupport Request Method : --- --- --- --");
+        NSAssert(requestMethod >= CHXRequestMethodPost, @"-- --- --- --- : Unsupport Request Method : --- --- --- --");
         
         // HTTP API absolute URL
         NSString *requestAbsoluteURLString = [request.subclass requestURLPath];
@@ -180,7 +180,6 @@
         NSParameterAssert(requestAbsoluteURLString.length);
         
         // HTTP POST value block
-        
         AFConstructingBlock constructingBodyBlock = [request.subclass respondsToSelector:@selector(constructingBodyBlock)] ? [request.subclass constructingBodyBlock] : nil;
         
         // SerializerType
@@ -479,7 +478,13 @@
     // If retrieve data using JSON, ignore this
     // If retrieve data using form binary data, provide a method convert to Foundation object
     responseObject = [request.subclass respondsToSelector:@selector(responseObjectFromRetrieveData:)] ? [request.subclass responseObjectFromRetrieveData:responseObject] : responseObject;
-    NSParameterAssert(responseObject);
+    
+    // responseObject should not be nil
+    if (!responseObject) {
+        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:@"Error: Server response object is nil"}];
+        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
+        return;
+    }
 
     request.responseObject = responseObject;
 
@@ -538,8 +543,16 @@
 #pragma mark - Handle failure
 
 - (void)pr_handleRequestFailureWithSessionDataTask:(NSURLSessionTask *)task error:(NSError *)error {
-    if (self.debugMode) {
-        NSLog(@"Request failure with error: %@", CHXStringFromCFNetworkErrorCode(error.code));
+    if (error) {
+        if (self.debugMode) {
+            NSLog(@"-- --- --- --- : Request failure with error: %@ : --- --- --- --",
+                  CHXStringFromCFNetworkErrorCode(error.code));
+        }
+        
+        // When request is canceled, dataTaskContainer will remove it, do not continue
+        if (kCFURLErrorCancelled == error.code) {
+            return;
+        }
     }
     
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];

@@ -50,10 +50,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    NSDictionary *dict = @{@"name":@"Moch", @"age":@22};
+//    NSLog(@"%@", dict);
+//    
 //    [self testApi];
-
-
-    [self testDownload];
+//    [self testDownload];
 }
 
 - (void)testApi {
@@ -61,11 +62,10 @@
     CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
         NSLog(@"%@", responseResult);
-//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
     } failureHandler:^(CHXRequest *request, id reponseMessage) {
         NSLog(@"%@", reponseMessage);
-//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
     }];
+    [request stopRequest];
 
     
 //    [AFHTTPSessionManager manager].responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -94,9 +94,10 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 //    [self testDownload];
     
-    for (int i = 0; i < 10; i++) {
-        [self testApi];
-    }
+//    for (int i = 0; i < 10; i++) {
+//        sleep(0.5);
+//        [self testApi];
+//    }
     [self testApi];
 }
 
