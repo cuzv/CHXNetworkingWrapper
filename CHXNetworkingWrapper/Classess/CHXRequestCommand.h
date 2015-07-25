@@ -32,35 +32,20 @@
 
 @interface CHXRequestCommand : NSObject <CHXRequestCommandProtocol>
 
-/**
- *  CHXRequestCommand shared instance
- *
- *  @return Shared instance
- */
+/// CHXRequestCommand shared instance
 + (instancetype)sharedInstance;
 
-/**
- *  When YES, will print request info and response info on terminal
- */
+/// When YES, will print request info and response info on terminal
 @property (nonatomic, assign) BOOL debugMode;
 
-/**
- *  Network not reachable description
- */
+/// Network not reachable description
 @property (nonatomic, copy) NSString *networkNotReachableDescription;
 
-/**
- *  Max concurent operation count, default is 4
- */
+/// Max concurent operation count, default is 4
 @property (nonatomic, assign) NSUInteger maxConcurrentOperationCount;
 
-/**
- *   Sets a callback to be executed when the network availability of the `baseURL` host changes.
- *
- *  @param block Callback block
- */
+/// Sets a callback to be executed when the network availability of the `baseURL` host changes.
 - (void)setReachabilityStatusChangeBlock:(void (^)(AFNetworkReachabilityStatus status))block;
-
 
 @end
 

@@ -32,10 +32,10 @@
 
 #pragma mark - CHXRequest
 
-// This class collection a request infos what needed, by subclass and override methods
+/// This class collection a request infos what needed, by subclass and override methods
 @interface CHXRequest : NSObject
 
-// The command, Before start requst, inject command first
+/// The command, Before start requst, inject command first
 @property (nonatomic, weak) id <CHXRequestCommandProtocol> command;
 
 @end
@@ -44,33 +44,24 @@
 
 @interface CHXRequest ()
 
-/**
- *  Server response object, generally contains `code`,  `result`, `message`
- */
+/// Server response object, generally contains `code`,  `result`, `message`
 @property (nonatomic, strong) id responseObject;
 
-/**
- *  Response code
- *  `[CHXRequestRetrieveProtocol] responseCodeFieldName` value
- */
+
+/// Response code
+/// `[CHXRequestRetrieveProtocol] responseCodeFieldName` value
 @property (nonatomic, assign) NSInteger responseCode;
 
-/**
- *  Retrieve result data, will be nil before the request notify complete
- *  `[CHXRequestRetrieveProtocol] responseResultFieldName` value
- */
+/// Retrieve result data, will be nil before the request notify complete
+/// `[CHXRequestRetrieveProtocol] responseResultFieldName` value
 @property (nonatomic, strong) id responseResult;
 
-/**
- *  Retrieve error message, usuall be sent NSString
- *  may be nil before the request notify complete
- *  `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
- */
+/// Retrieve error message, usuall be sent NSString
+/// may be nil before the request notify complete
+/// `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
 @property (nonatomic, strong) id responseMessage;
 
-/**
- *  Is the request response process succeed
- */
+/// Is the request response process succeed
 @property (nonatomic, assign) BOOL responseSuccess;
 
 @end

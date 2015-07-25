@@ -61,7 +61,7 @@
         return nil;
     }
     
-    _networkNotReachableDescription = @"当前网络无连接，请稍候再试！";
+    _networkNotReachableDescription = NSLocalizedString(@"当前网络无连接，请稍候再试！", nil);
     _debugMode = YES;
     
     _sessionManager = [AFHTTPSessionManager manager];
@@ -78,7 +78,7 @@
             strongSelf.networkReachabilityStatusChangeBlock(status);
         }
         if (strongSelf.debugMode) {
-            NSLog(@"-- --- --- --- : AFNetworkReachabilityStatus: %@ : --- --- --- --", AFStringFromNetworkReachabilityStatus(status));
+            NSLog(@"^^ ~~~ ^^^ ~~~ : AFNetworkReachabilityStatus: %@ : ~~~ ^^^ ~~~ ^^", AFStringFromNetworkReachabilityStatus(status));
         }
     }];
     
@@ -126,7 +126,7 @@
         
         // The first time description is not correct !
         if ([CHXRequestCommand sharedInstance].debugMode) {
-            NSLog(@"-- --- --- --- : The network is currently unreachable : --- --- --- --");
+            NSLog(@"^^ ~~~ ^^^ ~~~ : The network is currently unreachable : ~~~ ^^^ ~~~ ^^");
         }
         request.responseMessage = self.networkNotReachableDescription;
         
@@ -171,8 +171,8 @@
         
         // HTTP Method
         CHXRequestMethod requestMethod = [request.subclass requestMethod];
-        NSAssert(requestMethod <= CHXRequestMethodHead, @"-- --- --- --- : Unsupport Request Method : --- --- --- --");
-        NSAssert(requestMethod >= CHXRequestMethodPost, @"-- --- --- --- : Unsupport Request Method : --- --- --- --");
+        NSAssert(requestMethod <= CHXRequestMethodHead, @"^^ ~~~ ^^^ ~~~ : Unsupport Request Method : ~~~ ^^^ ~~~ ^^");
+        NSAssert(requestMethod >= CHXRequestMethodPost, @"^^ ~~~ ^^^ ~~~ : Unsupport Request Method : ~~~ ^^^ ~~~ ^^");
         
         // HTTP API absolute URL
         NSString *requestAbsoluteURLString = [request.subclass requestURLPath];
@@ -481,7 +481,7 @@
     
     // responseObject should not be nil
     if (!responseObject) {
-        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:@"Error: Server response object is nil"}];
+        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"找不到对象！找不到对象！找不到对象！", nil)}];
         [self pr_handleRequestFailureWithSessionDataTask:task error:error];
         return;
     }
@@ -545,7 +545,7 @@
 - (void)pr_handleRequestFailureWithSessionDataTask:(NSURLSessionTask *)task error:(NSError *)error {
     if (error) {
         if (self.debugMode) {
-            NSLog(@"-- --- --- --- : Request failure with error: %@ : --- --- --- --",
+            NSLog(@"^^ ~~~ ^^^ ~~~ : Request failure with error: %@ : ~~~ ^^^ ~~~ ^^",
                   CHXStringFromCFNetworkErrorCode(error.code));
         }
         
@@ -558,7 +558,7 @@
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.responseMessage = [error localizedDescription];
+    request.responseMessage = NSLocalizedString(@"服务器正在躲猫猫，请确认您的网络畅通或稍后再试！", nil);
     
     [request notifyComplete];
     

@@ -16,85 +16,43 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 
 @required
 
-/**
- *  Get assembly request parameters
- *
- *  @return AF request parameters
- */
+/// Get assembly request parameters
 - (NSDictionary *)requestParameters;
 
-/**
- *  Get the request URL address
- *
- *  @return URL address
- */
+/// Get the request URL address
 - (NSString *)requestURLPath;
 
-/**
- *  Get the request method
- *
- *  @return request method
- */
+/// Get the request method
 - (CHXRequestMethod)requestMethod;
 
-/**
- *  Get request paramters serialize type
- *
- *  @return request paramters serialize type
- */
+/// Get request paramters serialize type
 - (CHXRequestSerializerType)requestSerializerType;
 
 @optional
 
-/**
- *  Get POST body data block
- *
- *  @return POST body data block
- */
+/// Get POST body data block
 - (AFConstructingBlock)constructingBodyBlock;
 
-/**
- *  download file save path, the request method should always be `GET`
- *  Note: make sure the download file save path exist
- *
- *  @return download file save path
- */
+/// download file save path, the request method should always be `GET`
+/// Note: make sure the download file save path exist
 - (NSString *)downloadTargetFilePath;
 
-/**
- *  download file progress(0~1)
- *
- *  @return progress
- */
+/// download file progress(0~1)
 - (void(^)(CGFloat progress))downloadProgress;
 
-/**
- *  upload file progress(0~1)
- *  @rerturn progress
- */
+/// upload file progress(0~1)
 - (void(^)(CGFloat progress))uploadProgress;
 
-/**
- *  Get the request timeout setup interval
- *
- *  @return timeout interval
- */
+/// Get the request timeout setup interval
 - (NSTimeInterval)requestTimeoutInterval;
 
-/**
- *  Get the custom URLRequest
- *  If return `nil`, ignore `requestParameters, requestBaseURLString,
- *	requestSpecificURLString, requestSuffixURLString, requestMehtod`
- *
- *	@return Custom URLRequest
- */
+/// Get the custom URLRequest
+/// If return `nil`, ignore `requestParameters, requestBaseURLString,
+/// requestSpecificURLString, requestSuffixURLString, requestMehtod`
 - (NSURLRequest *)customURLRequest;
 
-/**
- *  Get cache time interval, if 0, no need cache
- *
- *  @return cache time interval, default value is 3 minutes
- */
+/// Get cache time interval, if 0, no need cache.
+/// default value is 3 minutes
 - (NSTimeInterval)requestCacheDuration;
 
 @end

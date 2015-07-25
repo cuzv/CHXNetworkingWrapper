@@ -11,33 +11,24 @@
 
 @interface CHXRequest ()
 
-// This transfer protocol methods response to subclass
+/// This transfer protocol methods response to subclass
 @property (nonatomic, weak, readonly) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
 
-// When networking is not reachable, retry after 1s, this record how many times have tried.
+/// When networking is not reachable, retry after 1s, this record how many times have tried.
 @property (nonatomic, assign) NSUInteger currentRetryCount;
 
-// Hold on request task, only invoke by `CHXRequestCommand`
+/// Hold on request task, only invoke by `CHXRequestCommand`
 @property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
 
-// The event notify queue
+/// The event notify queue
 @property (nonatomic, strong) dispatch_queue_t queue;
 
-
-/**
- *  Initialze dispatch_queue
- *
- *  @return Self
- */
+/// Initialze dispatch_queue
 - (CHXRequest *)initializeQueueIfNeeded;
 
-/**
- *  Notify the request is complete
- *  Only invoke by `CHXRequestCommand`
- *  No matter the request is success or failure, will invoke this method
- *
- *  @return Self
- */
+/// Notify the request is complete
+/// Only invoke by `CHXRequestCommand`
+/// No matter the request is success or failure, will invoke this method
 - (CHXRequest *)notifyComplete;
 
 @end

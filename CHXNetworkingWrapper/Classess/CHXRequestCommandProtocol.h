@@ -12,23 +12,13 @@
 
 @protocol CHXRequestCommandProtocol <NSObject>
 
-/**
- *  Add a request task
- *
- *  @param the request task
- */
+/// Add a request task
 - (void)addRequest:(CHXRequest *)request;
 
-/**
- *  Cancel request task
- *
- *  @param request the cancel task
- */
+/// Cancel request task
 - (void)removeRequest:(CHXRequest *)request;
 
-/**
- *  Cancel all request task
- */
+/// Cancel all request task
 - (void)removeAllRequest;
 
 @end

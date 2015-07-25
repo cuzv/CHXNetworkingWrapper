@@ -8,19 +8,19 @@
 
 #import "CHXRequest.h"
 
-// Deprecated
+/// Deprecated
 typedef void (^RequestSuccessCompletionBlock)(id responseObject) __attribute__((deprecated("use RequestSuccessHandler: instead")));
 typedef void (^RequestFailureCompletionBlock)(id errorMessage) __attribute__((deprecated("use RequestFailureHandler: instead")));
 typedef void (^RequestCompletionBlock)(id responseObject, id errorMessage) __attribute__((deprecated("use RequestCompletionHandler: instead")));
 
-// Preferred
+/// Preferred
 typedef void (^RequestCompletionHandler)(CHXRequest *request, id responseObject);
 typedef void (^RequestSuccessHandler)(CHXRequest *request, id responseResult);
 typedef void (^RequestFailureHandler)(CHXRequest *request, id responseMessage);
 
 @interface CHXRequest (ResponseHandler)
 
-// Deprecated: deliver on backend thread
+/// Deprecated: deliver on backend thread
 - (CHXRequest *)successCompletionResponse:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock
                 __attribute__((deprecated("use successHandler: instead")));
 - (CHXRequest *)completionResponse:(RequestCompletionBlock)requestCompletionBlock
@@ -28,17 +28,17 @@ typedef void (^RequestFailureHandler)(CHXRequest *request, id responseMessage);
 - (CHXRequest *)failureCompletionResponse:(RequestFailureCompletionBlock)requestFailureCompletionBlock
                 __attribute__((deprecated("use failureHnadler: instead")));
 
-// Preferred: deliver on main thread
+/// Preferred: deliver on main thread
 - (CHXRequest *)completionHandler:(RequestCompletionHandler)completionHandler;
 - (CHXRequest *)successHandler:(RequestSuccessHandler)successHandler;
 - (CHXRequest *)failureHnadler:(RequestFailureHandler)failureHnadler;
 
-// Deprecated: deliver on backend thread
+/// Deprecated: deliver on backend thread
 - (CHXRequest *)startRequestWithSuccess:(RequestSuccessCompletionBlock)requestSuccessCompletionBlock
                                  failure:(RequestFailureCompletionBlock)requestFailureCompletionBlock
                                  __attribute__((deprecated("use startRequestWithSuccessHandler:failureHandler instead")));
 
-// Preferred: deliver on main thread
+/// Preferred: deliver on main thread
 - (CHXRequest *)startRequestWithSuccessHandler:(RequestSuccessHandler)successHandler
                                 failureHandler:(RequestFailureHandler)failureHandler;
 

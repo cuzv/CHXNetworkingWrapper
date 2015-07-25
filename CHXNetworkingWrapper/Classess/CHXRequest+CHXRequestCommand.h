@@ -10,26 +10,13 @@
 
 @interface CHXRequest (CHXRequestCommand)
 
-/**
- *  Start a http request
- *
- *  @return Self
- */
+/// Start a http request
 - (CHXRequest *)startRequest;
 
-/**
- *  Stop the http request
- *
- *  @return Self
- */
+/// Stop the http request
 - (CHXRequest *)stopRequest;
 
-/**
- *  Stop all the http request
- *
- *  @return Self
- */
+/// Stop all the http request
 - (CHXRequest *)stopAllRequest;
-
 
 @end

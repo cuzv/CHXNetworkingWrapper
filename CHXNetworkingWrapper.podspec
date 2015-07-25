@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CHXNetworkingWrapper"
-  s.version      = "1.3"
+  s.version      = "1.3.5"
   s.summary      = "CHXNetworkingWrapper is a AFNetworking wrapper"
 
   s.homepage     = "https://github.com/atcuan/CHXNetworkingWrapper"
