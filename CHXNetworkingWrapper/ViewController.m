@@ -55,6 +55,12 @@
 //    
 //    [self testApi];
 //    [self testDownload];
+
+//    dispatch_apply(100, dispatch_get_main_queue(), ^(size_t index) {
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [self testApi];
+//        });
+//    });
 }
 
 - (void)testApi {
@@ -62,8 +68,8 @@
     CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
         NSLog(@"%@", responseResult);
-    } failureHandler:^(CHXRequest *request, id reponseMessage) {
-        NSLog(@"%@", reponseMessage);
+    } failureHandler:^(CHXRequest *request, id responseMessage) {
+        NSLog(@"%@", responseMessage);
     }];
     [request stopRequest];
 
@@ -86,8 +92,8 @@
     [down startRequest];
 //    [down startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
 //        NSLog(@"%@", responseResult);
-//    } failureHandler:^(CHXRequest *request, id reponseMessage) {
-//        NSLog(@"%@", reponseMessage);
+//    } failureHandler:^(CHXRequest *request, id responseMessage) {
+//        NSLog(@"%@", responseMessage);
 //    }];
 }
 

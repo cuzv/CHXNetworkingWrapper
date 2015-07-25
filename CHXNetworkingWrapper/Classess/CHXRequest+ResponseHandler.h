@@ -16,7 +16,7 @@ typedef void (^RequestCompletionBlock)(id responseObject, id errorMessage) __att
 // Preferred
 typedef void (^RequestCompletionHandler)(CHXRequest *request, id responseObject);
 typedef void (^RequestSuccessHandler)(CHXRequest *request, id responseResult);
-typedef void (^RequestFailureHandler)(CHXRequest *request, id reponseMessage);
+typedef void (^RequestFailureHandler)(CHXRequest *request, id responseMessage);
 
 @interface CHXRequest (ResponseHandler)
 
