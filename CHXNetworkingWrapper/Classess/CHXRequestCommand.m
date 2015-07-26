@@ -481,7 +481,7 @@
     
     // responseObject should not be nil
     if (!responseObject) {
-        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"找不到对象！找不到对象！找不到对象！", nil)}];
+        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"抱歉，服务器返回数据为空，不能处理您的请求！", nil)}];
         [self pr_handleRequestFailureWithSessionDataTask:task error:error];
         return;
     }
@@ -558,7 +558,7 @@
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.responseMessage = NSLocalizedString(@"服务器正在躲猫猫，请确认您的网络畅通或稍后再试！", nil);
+    request.responseMessage = NSLocalizedString(@"您的网络不畅通，请稍后再试！", nil);
     
     [request notifyComplete];
     
