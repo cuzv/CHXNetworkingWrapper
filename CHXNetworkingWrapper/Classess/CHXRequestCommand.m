@@ -558,7 +558,7 @@
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.responseMessage = NSLocalizedString(@"您的网络不畅通，请稍后再试！", nil);
+    request.responseMessage = NSLocalizedString(@"请求失败，请确保您的网络畅通或稍后再试！", nil);
     
     [request notifyComplete];
     
