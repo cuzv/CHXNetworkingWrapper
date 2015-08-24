@@ -16,7 +16,7 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 
 @required
 
-/// Get assembly request parameters
+/// Get assembly request body parameters
 - (NSDictionary *)requestParameters;
 
 /// Get the request URL address
@@ -29,6 +29,9 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 - (CHXRequestSerializerType)requestSerializerType;
 
 @optional
+
+/// Get assembly request header parameters
+- (NSDictionary *)requestHeaderParameters;
 
 /// Get POST body data block
 - (AFConstructingBlock)constructingBodyBlock;

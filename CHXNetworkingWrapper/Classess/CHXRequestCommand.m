@@ -3,7 +3,7 @@
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/atcuan).
+//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -69,7 +69,7 @@
     [_sessionManager.reachabilityManager startMonitoring];
     
     _dataTaskContainer = [NSMutableDictionary new];
-
+    
     // Monitor networking status
     __weak typeof(self) weakSelf = self;
     [_sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
@@ -109,7 +109,7 @@
 - (void)addRequest:(CHXRequest *)request {
     // Checking Networking status
     if (![self pr_isNetworkReachable]) {
-
+        
         // If cache exist, return cache data
         if (![self pr_shouldContinueRequest:request]) {
             return;
@@ -186,10 +186,13 @@
         [self pr_settingupRequestSerializerTypeByRequest:request];
         [self pr_settingupResponseSerializerTypeByRequest:request];
         
+        // Header
+        [self pr_settingRequestHeaderByRequest:request];
+        
         // HTTP Request parameters
         requestParameters = [request.subclass requestParameters];
         NSParameterAssert(requestParameters);
-
+        
         // Open networking activity indicator
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
         
@@ -212,7 +215,7 @@
                         [strongSessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
                             // Do nothing
                         }];
-                    }];                    
+                    }];
                 } else {
                     dataTask = [self.sessionManager POST:requestAbsoluteURLString parameters:requestParameters success:successHandler failure:failureHandler];
                 }
@@ -232,7 +235,7 @@
                     NSString *fileRemoteURLString = [self pr_requestFileRemoteURLStringWithRequest:request];
                     NSURL *fileRemoteURL = [NSURL URLWithString:fileRemoteURLString];
                     NSURLRequest *downURLRequest = [NSURLRequest requestWithURL:fileRemoteURL];
-
+                    
                     dataTask = [sessionManager downloadTaskWithRequest:downURLRequest progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
                         return [NSURL URLWithString:downloadTargetFilePath];
                     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
@@ -243,12 +246,12 @@
                             successHandler((NSURLSessionDataTask *)request.requestSessionTask, object);
                         }
                     }];
-
+                    
                     // Setup progress callback
                     void(^block)(CGFloat progress) = [request.subclass respondsToSelector:@selector(downloadProgress)] ? [request.subclass downloadProgress] : nil;
                     if (block) {
                         [sessionManager setDownloadTaskDidWriteDataBlock:^(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
-                                block(totalBytesWritten * 1.0f / totalBytesExpectedToWrite * 1.0f);
+                            block(totalBytesWritten * 1.0f / totalBytesExpectedToWrite * 1.0f);
                         }];
                     }
                     
@@ -295,6 +298,7 @@
     if (self.debugMode) {
         NSLog(@"Request URL: %@", dataTask.currentRequest.URL);
         NSLog(@"Request parameters: %@", requestParameters);
+        NSLog(@"Request headers: %@", dataTask.currentRequest.allHTTPHeaderFields);
     }
 }
 
@@ -469,12 +473,19 @@
     }
 }
 
+- (void)pr_settingRequestHeaderByRequest:(CHXRequest *)request {
+    NSDictionary *headerParameters = [request.subclass respondsToSelector:@selector(requestHeaderParameters)] ? [request.subclass requestHeaderParameters] : @{};
+    [headerParameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        [self.sessionManager.requestSerializer setValue:obj forHTTPHeaderField:key];
+    }];
+}
+
 #pragma mark - Handle success
 
 - (void)pr_handleRequestSuccessWithSessionDataTask:(NSURLSessionTask *)task responseObject:(id)responseObject {
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
-
+    
     // If retrieve data using JSON, ignore this
     // If retrieve data using form binary data, provide a method convert to Foundation object
     responseObject = [request.subclass respondsToSelector:@selector(responseObjectFromRetrieveData:)] ? [request.subclass responseObjectFromRetrieveData:responseObject] : responseObject;
@@ -485,9 +496,9 @@
         [self pr_handleRequestFailureWithSessionDataTask:task error:error];
         return;
     }
-
+    
     request.responseObject = responseObject;
-
+    
     [self pr_cacheIfNeededWithRequest:request responseObject:responseObject];
     [self pr_handleRequestSuccessWithRequest:request responseObject:responseObject];
     [self pr_prepareDeallocRequest:request];
