@@ -54,7 +54,7 @@
 }
 
 - (NSString *)requestApiName {
-    return @"getPromoteProductList";
+    return @"getPromoteProductList---";
 }
 
 - (NSArray *)requestSortedParmeters {
@@ -64,7 +64,7 @@
 }
 
 - (NSTimeInterval)requestTimeoutInterval {
-    return 2*60;
+    return 3;
 }
 
 

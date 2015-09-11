@@ -67,11 +67,11 @@
     
     CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
-        NSLog(@"%@", responseResult);
+        NSLog(@"responseResult: %@", responseResult);
     } failureHandler:^(CHXRequest *request, id responseMessage) {
-        NSLog(@"%@", responseMessage);
+        NSLog(@"responseMessage: %@", responseMessage);
     }];
-    [request stopRequest];
+//    [request stopRequest];
 
     
 //    [AFHTTPSessionManager manager].responseSerializer = [AFHTTPResponseSerializer serializer];

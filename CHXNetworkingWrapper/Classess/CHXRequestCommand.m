@@ -242,7 +242,7 @@
                         if (error) {
                             failureHandler((NSURLSessionDataTask *)request.requestSessionTask, error);
                         } else {
-                            id object = [self pr_buildResponseObject:filePath forRequest:request];
+                            id object = [self pr_buildResponseSuccessedObjectFromServerResponse:filePath forRequest:request];
                             successHandler((NSURLSessionDataTask *)request.requestSessionTask, object);
                         }
                     }];
@@ -365,6 +365,9 @@
 }
 
 - (void)pr_cacheIfNeededWithRequest:(CHXRequest *)request responseObject:(id)responseObject {
+    if (!responseObject) {
+        return;
+    }
     NSTimeInterval cacheTimeInterval = [request.subclass respondsToSelector:@selector(requestCacheDuration)] ? [request.subclass requestCacheDuration] : 0.0f;
     if (cacheTimeInterval <= 0) {
         return;
@@ -488,15 +491,9 @@
     
     // If retrieve data using JSON, ignore this
     // If retrieve data using form binary data, provide a method convert to Foundation object
-    responseObject = [request.subclass respondsToSelector:@selector(responseObjectFromRetrieveData:)] ? [request.subclass responseObjectFromRetrieveData:responseObject] : responseObject;
-    
-    // responseObject should not be nil
-    if (!responseObject) {
-        NSError *error = [NSError errorWithDomain:@"com.foobar.moch" code:kCFURLErrorBadServerResponse userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"抱歉，服务器返回数据为空，不能处理您的请求！", nil)}];
-        [self pr_handleRequestFailureWithSessionDataTask:task error:error];
-        return;
-    }
-    
+    responseObject = [request.subclass respondsToSelector:@selector(responseObjectFromRetrieveData:)] ?
+    [request.subclass responseObjectFromRetrieveData:responseObject] :
+    responseObject;
     request.responseObject = responseObject;
     
     [self pr_cacheIfNeededWithRequest:request responseObject:responseObject];
@@ -504,8 +501,7 @@
     [self pr_prepareDeallocRequest:request];
 }
 
-
-- (id)pr_buildResponseObject:(id)responseObject forRequest:(CHXRequest *)request {
+- (id)pr_buildResponseSuccessedObjectFromServerResponse:(id)responseObject forRequest:(CHXRequest *)request {
     NSString *responseCodeFieldName = [request.subclass responseCodeFieldName];
     NSParameterAssert(responseCodeFieldName);
     NSParameterAssert(responseCodeFieldName.length);
@@ -514,7 +510,8 @@
     NSParameterAssert(responseResultFieldName);
     NSParameterAssert(responseResultFieldName.length);
     
-    NSDictionary *returnObject = @{responseCodeFieldName:@([request.subclass responseSuccessCodeValue]), responseResultFieldName:responseObject};
+    NSDictionary *returnObject = @{responseCodeFieldName:@([request.subclass responseSuccessCodeValue]),
+                                   responseResultFieldName:responseObject};
     
     return returnObject;
 }
@@ -524,25 +521,36 @@
     NSParameterAssert(responseCodeFieldName);
     NSParameterAssert(responseCodeFieldName.length);
     
+    // responseObject should not be nil
+    NSInteger responseSuccessCodeValue = [request.subclass responseSuccessCodeValue];
+    NSString *responseMessageFieldName = [request.subclass responseMessageFieldName];
+    NSParameterAssert(responseMessageFieldName);
+    NSParameterAssert(responseMessageFieldName.length);
+    if (!responseObject) {
+        responseObject = @{responseCodeFieldName:@(HUGE_VAL),
+                           responseMessageFieldName:NSLocalizedString(@"服务器返回数据无法处理，请稍后再试。", nil)};
+    }
+    
+    // Setup response code
     NSInteger responseCode = [[responseObject objectForKey:responseCodeFieldName] integerValue];
     request.responseCode = responseCode;
     
-    if (responseCode == [request.subclass responseSuccessCodeValue]) {
+    if (responseCode == responseSuccessCodeValue) {
+        // Setup response result field value
         NSString *responseResultFieldName = [request.subclass responseResultFieldName];
         NSParameterAssert(responseResultFieldName);
         NSParameterAssert(responseResultFieldName.length);
-        request.responseSuccess = YES;
-        
         id responseResult = [responseObject objectForKey:responseResultFieldName];
         request.responseResult = responseResult;
+        
+        // Setup response status
+        request.responseSuccess = YES;
+        
         if (self.debugMode) {
             NSLog(@"responseResult: %@", request.responseResult);
         }
     } else {
-        NSString *responseMessageFieldName = [request.subclass responseMessageFieldName];
-        NSParameterAssert(responseMessageFieldName);
-        NSParameterAssert(responseMessageFieldName.length);
-        
+        // Setup response message field value
         id responseMessage = [responseObject objectForKey:responseMessageFieldName];
         request.responseMessage = responseMessage;
     }
@@ -553,6 +561,14 @@
 
 #pragma mark - Handle failure
 
+/// Process networking request failure, which means this request has been failed
+/// Note: request failure contains two situation.
+/// One is start networking asking filure, which means the server did not received the requst.
+/// or server reject response the reqeust
+/// The other is the server received the requset but can not hanlde it, may response empty data or
+/// mark this request as failed then response some error message.
+/// Follow method handle the first situation
+/// The second situation handle by `pr_handleRequestSuccessWithSessionDataTask:responseObject`
 - (void)pr_handleRequestFailureWithSessionDataTask:(NSURLSessionTask *)task error:(NSError *)error {
     if (error) {
         if (self.debugMode) {
@@ -569,7 +585,7 @@
     CHXRequest *request = [self.dataTaskContainer objectForKey:@(task.taskIdentifier)];
     NSParameterAssert(request);
     
-    request.responseMessage = NSLocalizedString(@"请求失败，请确保您的网络畅通或稍后再试！", nil);
+    request.responseMessage = NSLocalizedString(@"请求失败，请确保您的网络畅通或稍后再试。", nil);
     
     [request notifyComplete];
     
