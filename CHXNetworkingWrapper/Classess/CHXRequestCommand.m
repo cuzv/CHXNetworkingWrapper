@@ -203,11 +203,10 @@
                     
                     // Setup upload progress
                     void(^block)(CGFloat progress) = [request.subclass respondsToSelector:@selector(uploadProgress)] ? [request.subclass uploadProgress] : nil;
-                    if (!block) {
-                        return;
-                    }
                     [self.sessionManager setTaskDidSendBodyDataBlock:^(NSURLSession *session, NSURLSessionTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
-                        block(totalBytesSent * 1.0f / totalBytesExpectedToSend * 1.0f);
+                        if (block) {
+                            block(totalBytesSent * 1.0f / totalBytesExpectedToSend * 1.0f);
+                        }
                     }];
                     __weak typeof(self.sessionManager) weakSessionManager = self.sessionManager;
                     [self.sessionManager setTaskDidCompleteBlock:^(NSURLSession *session, NSURLSessionTask *task, NSError *error) {
