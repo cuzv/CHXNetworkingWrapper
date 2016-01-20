@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
 :tag => s.version.to_s }
   s.source_files  = "CHXNetworkingWrapper/Sources/*.{h,m}"
   s.frameworks = 'Foundation', 'UIKit'
-  s.dependency "AFNetworking"
+  s.dependency "AFNetworking", "~> 2.6"
 end
