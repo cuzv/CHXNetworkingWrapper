@@ -1,8 +1,8 @@
 //
-//  AppDelegate.h
+//  CHXRequestCommandProtocol.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-25.
+//  Created by Moch Xiao on 7/13/15.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,12 +24,19 @@
 //  THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@class CHXRequest;
 
-@property (strong, nonatomic) UIWindow *window;
+@protocol CHXRequestCommandProtocol <NSObject>
 
+/// Add a request task
+- (void)addRequest:(CHXRequest *)request;
+
+/// Cancel request task
+- (void)removeRequest:(CHXRequest *)request;
+
+/// Cancel all request task
+- (void)removeAllRequest;
 
 @end
-
