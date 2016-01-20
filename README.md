@@ -2,6 +2,10 @@
 
 CHXNetworkingWrapper is an [AFNetworking](https://github.com/AFNetworking/AFNetworking) wrapper. The swift version checkout [here](https://github.com/cuzv/redes).
 
+The 1.x version support AFNetworking 2.x version only.
+
+The 2.x version support AFNetworking 3.x version only.
+
 ## Feature
 
 - Done asynchronously
@@ -40,4 +44,3 @@ You can install CHXNetworkingWrapper using [CocoaPods](http://cocoapods.org/)
 ## License
 
 CHXNetworkingWrapper is available under the MIT license. See the LICENSE file for more info.
-
