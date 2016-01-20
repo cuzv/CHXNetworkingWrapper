@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CHXNetworkingWrapper"
-  s.version      = "1.4.1"
+  s.version      = "1.5"
   s.summary      = "CHXNetworkingWrapper is a AFNetworking wrapper"
 
   s.homepage     = "https://github.com/cuzv/CHXNetworkingWrapper"
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.requires_arc  = true
   s.source       = { :git => "https://github.com/cuzv/CHXNetworkingWrapper.git",
 :tag => s.version.to_s }
-  s.source_files  = "CHXNetworkingWrapper/Classess/*"
+  s.source_files  = "CHXNetworkingWrapper/Sources/*.{h,m}"
   s.frameworks = 'Foundation', 'UIKit'
   s.dependency "AFNetworking"
 end

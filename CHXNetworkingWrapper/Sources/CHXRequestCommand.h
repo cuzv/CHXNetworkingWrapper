@@ -1,5 +1,5 @@
 //
-//  CHXRequest.h
+//  CHXRequestCommand.h
 //  CHXNetworkingWrapper
 //
 //  Created by Moch Xiao on 2015-04-19.
@@ -25,43 +25,26 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
-#import "CHXRequestConstructProtocol.h"
-#import "CHXRequestRetrieveProtocol.h"
+#import "AFNetworkReachabilityManager.h"
 #import "CHXRequestCommandProtocol.h"
 
-#pragma mark - CHXRequest
+@class CHXRequest;
 
-/// This class collection a request infos what needed, by subclass and override methods
-@interface CHXRequest : NSObject
+@interface CHXRequestCommand : NSObject <CHXRequestCommandProtocol>
 
-/// The command, Before start requst, inject command first
-@property (nonatomic, weak) id <CHXRequestCommandProtocol> command;
+/// When YES, will print request info and response info on terminal
+@property (nonatomic, assign) BOOL debugMode;
 
-@end
+/// Network not reachable description
+@property (nonatomic, copy) NSString *networkNotReachableDescription;
 
-#pragma mark - CHXRequestCommand retrieve data
+/// Max concurent operation count, default is 4
+@property (nonatomic, assign) NSUInteger maxConcurrentOperationCount;
 
-@interface CHXRequest ()
-
-/// Server response object, generally contains `code`,  `result`, `message`
-@property (nonatomic, strong) id responseObject;
-
-
-/// Response code
-/// `[CHXRequestRetrieveProtocol] responseCodeFieldName` value
-@property (nonatomic, assign) NSInteger responseCode;
-
-/// Retrieve result data, will be nil before the request notify complete
-/// `[CHXRequestRetrieveProtocol] responseResultFieldName` value
-@property (nonatomic, strong) id responseResult;
-
-/// Retrieve error message, usuall be sent NSString
-/// may be nil before the request notify complete
-/// `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
-@property (nonatomic, strong) id responseMessage;
-
-/// Is the request response process succeed
-@property (nonatomic, assign) BOOL responseSuccess;
+/// Sets a callback to be executed when the network availability of the `baseURL` host changes.
+- (void)setReachabilityStatusChangeBlock:(void (^)(AFNetworkReachabilityStatus status))block;
 
 @end
+
+
+

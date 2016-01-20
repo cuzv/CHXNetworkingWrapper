@@ -1,8 +1,8 @@
 //
-//  CHXRequestCommand.h
+//  CHXRequestCommandProtocol.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-19.
+//  Created by Moch Xiao on 7/13/15.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,29 +25,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFNetworkReachabilityManager.h"
-#import "CHXRequestCommandProtocol.h"
 
 @class CHXRequest;
 
-@interface CHXRequestCommand : NSObject <CHXRequestCommandProtocol>
+@protocol CHXRequestCommandProtocol <NSObject>
 
-/// CHXRequestCommand shared instance
-+ (instancetype)sharedInstance;
+/// Add a request task
+- (void)addRequest:(CHXRequest *)request;
 
-/// When YES, will print request info and response info on terminal
-@property (nonatomic, assign) BOOL debugMode;
+/// Cancel request task
+- (void)removeRequest:(CHXRequest *)request;
 
-/// Network not reachable description
-@property (nonatomic, copy) NSString *networkNotReachableDescription;
-
-/// Max concurent operation count, default is 4
-@property (nonatomic, assign) NSUInteger maxConcurrentOperationCount;
-
-/// Sets a callback to be executed when the network availability of the `baseURL` host changes.
-- (void)setReachabilityStatusChangeBlock:(void (^)(AFNetworkReachabilityStatus status))block;
+/// Cancel all request task
+- (void)removeAllRequest;
 
 @end
-
-
-

@@ -46,7 +46,7 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 @implementation CHXBaseRequest
 
 - (id <CHXRequestCommandProtocol>)command {
-    return [CHXRequestCommand sharedInstance];
+    return [CHXRequestCommand new];
 }
 
 #pragma mark - CHXRequestConstructProtocol
@@ -64,7 +64,7 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 // 版本号
 - (NSString *)requestApiVersion {
-    return @"v2";
+    return @"v2.1";
 }
 
 - (NSDictionary *)requestParameters {

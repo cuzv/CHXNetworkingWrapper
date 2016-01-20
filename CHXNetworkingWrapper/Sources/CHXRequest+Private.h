@@ -1,8 +1,8 @@
 //
-//  AppDelegate.h
+//  CHXRequest+Private.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-25.
+//  Created by Moch Xiao on 7/14/15.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,12 +24,31 @@
 //  THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#import <Foundation/Foundation.h>
+#import "CHXRequest.h"
 
-@property (strong, nonatomic) UIWindow *window;
+@interface CHXRequest ()
 
+/// This transfer protocol methods response to subclass
+@property (nonatomic, weak, readonly) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
+
+/// When networking is not reachable, retry after 1s, this record how many times have tried.
+@property (nonatomic, assign) NSUInteger currentRetryCount;
+
+/// Hold on request task, only invoke by `CHXRequestCommand`
+@property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
+
+/// The event notify queue
+@property (nonatomic, strong) dispatch_queue_t queue;
+
+/// Initialze dispatch_queue
+- (CHXRequest *)initializeQueueIfNeeded;
+
+/// Notify the request is complete
+/// Only invoke by `CHXRequestCommand`
+/// No matter the request is success or failure, will invoke this method
+- (CHXRequest *)notifyComplete;
 
 @end
 

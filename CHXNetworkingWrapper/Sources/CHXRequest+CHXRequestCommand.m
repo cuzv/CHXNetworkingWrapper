@@ -1,8 +1,8 @@
 //
-//  CHXNetworkingWrapperTests.m
+//  CHXRequest+CHXRequestCommand.m
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-25.
+//  Created by Moch Xiao on 7/11/15.
 //  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,35 +24,32 @@
 //  THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
-#import <XCTest/XCTest.h>
 
-@interface CHXNetworkingWrapperTests : XCTestCase
+#import "CHXRequest+CHXRequestCommand.h"
+#import "CHXRequestCommand.h"
+#import "CHXRequest+Private.h"
 
+@interface CHXRequest ()
 @end
 
-@implementation CHXNetworkingWrapperTests
+@implementation CHXRequest (CHXRequestCommand)
 
-- (void)setUp {
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+- (CHXRequest *)startRequest {
+    [self initializeQueueIfNeeded];
+    
+    [self.command addRequest:self];
+    return self;
 }
 
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
+- (CHXRequest *)stopRequest {
+    [self.command removeRequest:self];
+    return self;
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    XCTAssert(YES, @"Pass");
+- (CHXRequest *)stopAllRequest {
+    [self.command removeAllRequest];
+    return self;
 }
 
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
-}
 
 @end
