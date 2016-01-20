@@ -123,21 +123,12 @@
 			path = CHXNetworkingWrapper;
 			sourceTree = "<group>";
 		};
-		468F1A171C4F63BB004AF966 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				468F1A181C4F63BB004AF966 /* main.m */,
-			);
-			path = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		468F1A2E1C4F63D0004AF966 /* Sample */ = {
 			isa = PBXGroup;
 			children = (
+				468F1A301C4F63E3004AF966 /* Application */,
 				468F1A861C4F66C2004AF966 /* Request */,
 				468F1A8D1C4F66C2004AF966 /* Vendors */,
-				468F1A301C4F63E3004AF966 /* Application */,
-				468F1A171C4F63BB004AF966 /* Supporting Files */,
 				468F1A231C4F63BB004AF966 /* Assets.xcassets */,
 				468F1A971C4F66E0004AF966 /* ViewController.h */,
 				468F1A981C4F66E0004AF966 /* ViewController.m */,
@@ -153,6 +144,7 @@
 				468F1A281C4F63BB004AF966 /* Info.plist */,
 				468F1A251C4F63BB004AF966 /* LaunchScreen.storyboard */,
 				468F1A201C4F63BB004AF966 /* Main.storyboard */,
+				468F1A181C4F63BB004AF966 /* main.m */,
 			);
 			path = Application;
 			sourceTree = "<group>";

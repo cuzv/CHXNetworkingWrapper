@@ -32,9 +32,6 @@
 
 @interface CHXRequestCommand : NSObject <CHXRequestCommandProtocol>
 
-/// CHXRequestCommand shared instance
-+ (instancetype)sharedInstance;
-
 /// When YES, will print request info and response info on terminal
 @property (nonatomic, assign) BOOL debugMode;
 

@@ -17,7 +17,7 @@
 @implementation CHXDownLoadRequest
 
 - (id <CHXRequestCommandProtocol>)command {
-    return [CHXRequestCommand sharedInstance];
+    return [CHXRequestCommand new];
 }
 
 - (instancetype)initWithDownloadProgress:(void(^)(CGFloat progress))downloadProgress {

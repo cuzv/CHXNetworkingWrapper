@@ -45,14 +45,8 @@
 
 @implementation CHXRequestCommand
 
-+ (instancetype)sharedInstance {
-    static CHXRequestCommand *_sharedInstance;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _sharedInstance = [self new];
-    });
-    
-    return _sharedInstance;
+- (void)dealloc {
+    NSLog(@"~~~~~~~~~~~%s~~~~~~~~~~~", __FUNCTION__);
 }
 
 - (instancetype)init {
@@ -79,13 +73,6 @@
         }
         if (strongSelf.debugMode) {
             NSLog(@"^^ ~~~ ^^^ ~~~ : AFNetworkReachabilityStatus: %@ : ~~~ ^^^ ~~~ ^^", AFStringFromNetworkReachabilityStatus(status));
-        }
-    }];
-    
-    // When background download file complete, but move to target path failure, will post this notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:nil queue:[NSOperationQueue currentQueue] usingBlock:^(NSNotification *note) {
-        if (_debugMode) {
-            NSLog(@"AFURLSessionDownloadTaskDidFailToMoveFileNotification: %@", note);
         }
     }];
     
@@ -125,7 +112,7 @@
         }
         
         // The first time description is not correct !
-        if ([CHXRequestCommand sharedInstance].debugMode) {
+        if (self.debugMode) {
             NSLog(@"^^ ~~~ ^^^ ~~~ : The network is currently unreachable : ~~~ ^^^ ~~~ ^^");
         }
         request.responseMessage = self.networkNotReachableDescription;

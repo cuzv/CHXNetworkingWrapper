@@ -26,6 +26,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CHXRequestEnum.h"
+#import "CHXRequestCommandProtocol.h"
 
 @protocol AFMultipartFormData;
 typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);

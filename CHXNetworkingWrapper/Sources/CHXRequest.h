@@ -35,7 +35,7 @@
 /// This class collection a request infos what needed, by subclass and override methods
 @interface CHXRequest : NSObject
 
-/// The command, Before start requst, inject command first
+///// The command, Before start requst, inject command first
 @property (nonatomic, weak) id <CHXRequestCommandProtocol> command;
 
 @end
