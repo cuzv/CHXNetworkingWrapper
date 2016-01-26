@@ -67,13 +67,17 @@
     return self;
 }
 
-- (void)start {
+- (nonnull CHXRequest *)start {
     [self _initializeQueue];
     [self.command injectRequest:self];
+    
+    return self;
 }
 
-- (void)cancel {
+- (nonnull CHXRequest *)cancel {
     [self.command removeRequest];
+    
+    return self;
 }
 
 #pragma mark - 

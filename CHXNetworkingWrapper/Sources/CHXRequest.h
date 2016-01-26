@@ -34,14 +34,32 @@
 @property (nonatomic, weak, readonly) id<CHXRequestable, CHXResponseable> setup;
 
 /// Start the request.
-- (void)start;
+- (nonnull CHXRequest *)start;
 ///  Cancel the request.
-- (void)cancel;
+- (nonnull CHXRequest *)cancel;
 
 /// Default is NO.
 @property (nonatomic, assign) BOOL deliverOnMainThread;
 /// Default is YES.
 @property (nonatomic, assign) BOOL printDebugInfo;
+
+
+/// Server response object, generally contains `code`,  `result`, `message`
+@property (nonatomic, strong, readonly, nullable) id responseObject;
+
+/// Response code
+@property (nonatomic, assign, readonly) NSInteger responseCode;
+
+/// Retrieve result data, will be nil before the request notify complete
+@property (nonatomic, strong, readonly, nullable) id responseResult;
+
+/// Retrieve error message, usuall be sent NSString
+/// may be nil before the request notify complete
+@property (nonatomic, strong, readonly, nullable) id responseMessage;
+
+/// Is the request response process succeed
+@property (nonatomic, assign, readonly) BOOL responseSuccess;
+
 
 @end
 

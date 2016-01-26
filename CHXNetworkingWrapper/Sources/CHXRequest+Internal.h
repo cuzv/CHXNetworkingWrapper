@@ -29,21 +29,20 @@
 @interface CHXRequest ()
 
 /// Server response object, generally contains `code`,  `result`, `message`
-@property (nonatomic, strong, nullable) id responseObject;
+@property (nonatomic, strong, readwrite, nullable) id responseObject;
 
 /// Response code
-@property (nonatomic, assign) NSInteger responseCode;
+@property (nonatomic, assign, readwrite) NSInteger responseCode;
 
 /// Retrieve result data, will be nil before the request notify complete
-@property (nonatomic, strong, nullable) id responseResult;
+@property (nonatomic, strong, readwrite, nullable) id responseResult;
 
 /// Retrieve error message, usuall be sent NSString
 /// may be nil before the request notify complete
-@property (nonatomic, strong, nullable) id responseMessage;
+@property (nonatomic, strong, readwrite, nullable) id responseMessage;
 
 /// Is the request response process succeed
-@property (nonatomic, assign) BOOL responseSuccess;
-
+@property (nonatomic, assign, readwrite) BOOL responseSuccess;
 
 
 /// Notify the request is complete
