@@ -1,9 +1,9 @@
 //
-//  CHXRequest+Private.h
+//  CHXRequestCommandability.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 7/14/15.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,17 @@
 //  THE SOFTWARE.
 //
 
-
 #import <Foundation/Foundation.h>
 #import "CHXRequest.h"
 
-@interface CHXRequest ()
+@protocol CHXRequestable;
 
-/// This transfer protocol methods response to subclass
-@property (nonatomic, weak, readonly) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
+@protocol CHXCommandability <NSObject>
 
-/// When networking is not reachable, retry after 1s, this record how many times have tried.
-@property (nonatomic, assign) NSUInteger currentRetryCount;
+/// Add request.
+- (void)injectRequest:(nonnull CHXRequest *)request;
 
-/// Hold on request task, only invoke by `CHXRequestCommand`
-@property (nonatomic, strong) NSURLSessionTask *requestSessionTask;
-
-/// The event notify queue
-@property (nonatomic, strong) dispatch_queue_t queue;
-
-/// Initialze dispatch_queue
-- (CHXRequest *)initializeQueueIfNeeded;
-
-/// Notify the request is complete
-/// Only invoke by `CHXRequestCommand`
-/// No matter the request is success or failure, will invoke this method
-- (CHXRequest *)notifyComplete;
+/// Remove request.
+- (void)removeRequest;
 
 @end
-

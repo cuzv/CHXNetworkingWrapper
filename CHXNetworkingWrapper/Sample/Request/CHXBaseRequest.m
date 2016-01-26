@@ -27,7 +27,6 @@
 #import "CHXBaseRequest.h"
 #import "NSDataExtension.h"
 #import "NSString+MD5.h"
-#import "CHXNetworkingWrapper.h"
 
 static const NSString *kUser = @"haioo";
 NSString * const kSecrectKey = @"Ka48qGTlf00PSoNnZwM3Rx8PG2oOs1RK";
@@ -45,11 +44,11 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 @implementation CHXBaseRequest
 
-- (id <CHXRequestCommandProtocol>)command {
-    return [CHXRequestCommand new];
-}
+#pragma mark - CHXRequestable
 
-#pragma mark - CHXRequestConstructProtocol
+- (id)requestCommand {
+    return [CHXAFCommand new];
+}
 
 - (NSString *)requestURLPath {
     NSMutableString *url = [NSMutableString new];
@@ -67,15 +66,15 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return @"v2.1";
 }
 
-- (NSDictionary *)requestParameters {
+- (NSDictionary<NSString *,id> *)requestBodyParameters {
     NSDictionary *dict = @{@"data": [self pr_actualRequestParams],
                            @"signature": [self pr_requestSignature]};
     NSLog(@"request params = %@", dict);
-
+    
     // convert to JSON
     NSData *jsonData = [NSData chx_dataWithJSONObject:dict];
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
+    
     return @{@"data": jsonString};
 }
 
@@ -83,18 +82,15 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return CHXRequestMethodPost;
 }
 
-- (CHXRequestSerializerType)requestSerializerType {
-    return CHXRequestSerializerTypeHTTP;
+- (CHXParameterEncoding)requestParameterEncoding {
+    return CHXParameterEncodingURL;
 }
 
-- (BOOL)requestDemandCache {
-    return NO;
-}
 
-#pragma mark - CHXRequestRetrieveProtocol
+#pragma mark - CHXResponseable
 
-- (CHXResponseSerializerType)responseSerializerType {
-    return CHXResponseSerializerTypeHTTP;
+- (CHXResponseEncoding)responseEncoding {
+    return CHXResponseEncodingForm;
 }
 
 - (NSString *)responseCodeFieldName {
@@ -113,8 +109,12 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
     return @"msg";
 }
 
-- (id)responseObjectFromRetrieveData:(id)data {
-    return [data chx_JSONObject];
+- (ConvertResponseHandler)convertResponseHandler {
+    ConvertResponseHandler handler = ^(id obj ){
+        return [obj chx_JSONObject];
+    };
+    
+    return handler;
 }
 
 #pragma mark - Private

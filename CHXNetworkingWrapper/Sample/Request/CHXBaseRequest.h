@@ -25,8 +25,9 @@
 //
 
 #import "CHXRequest.h"
+#import "CHXNetworkingWrapper.h"
 
-@interface CHXBaseRequest : CHXRequest <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol>
+@interface CHXBaseRequest : CHXRequest <CHXRequestable, CHXResponseable>
 
 - (NSString *)requestModuleName;
 - (NSString *)requestApiName;

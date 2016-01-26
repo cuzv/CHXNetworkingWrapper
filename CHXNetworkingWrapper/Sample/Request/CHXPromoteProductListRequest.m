@@ -54,7 +54,7 @@
 }
 
 - (NSString *)requestApiName {
-    return @"getPromoteProductList---";
+    return @"getPromoteProductList";
 }
 
 - (NSArray *)requestSortedParmeters {

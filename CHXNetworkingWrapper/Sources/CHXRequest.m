@@ -1,9 +1,9 @@
 //
-//  CHXRequest.m
+//  CHXRequestHoster.m
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-19.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -25,86 +25,62 @@
 //
 
 #import "CHXRequest.h"
-#import "CHXRequestCommand.h"
-#import "CHXMacro.h"
-#import "NSObject+ObjcRuntime.h"
+#import "CHXCommandability.h"
+#import "CHXResponseable.h"
+#import "CHXRequestable.h"
+#import "CHXRequest+Internal.h"
 
 @interface CHXRequest ()
-@property (nonatomic, weak, readwrite) id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol> subclass;
 
-// Private
-@property (nonatomic, assign, readwrite) NSUInteger currentRetryCount;
-@property (nonatomic, strong, readwrite) NSURLSessionTask *requestSessionTask;
+@property (nonatomic, weak, readwrite) id<CHXRequestable, CHXResponseable> setup;
+@property (nonatomic, strong, readwrite) id<CHXCommandability> command;
+/// The event notify queue
 @property (nonatomic, strong) dispatch_queue_t queue;
 
 @end
 
 @implementation CHXRequest
 
+#if DEBUG
 - (void)dealloc {
-    NSLog(@"%s", __FUNCTION__);
-}
-
-#pragma mark - Hash
-
-- (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:[self class]]) {
-        return NO;
+    if (self.printDebugInfo) {
+        NSLog(@"~~~~~~~~~~~%s~~~~~~~~~~~", __FUNCTION__);
     }
-    
-    NSArray *propertyArray = [self objc_properties];
-    __block BOOL euqal = YES;
-    [propertyArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        id selfObject = [self valueForKey:obj];
-        id compareObject = [object valueForKey:obj];
-        euqal = [selfObject isEqual:compareObject];
-        
-        if (!euqal && selfObject && compareObject) {
-            *stop = YES;
-        } else {
-            euqal = YES;
-        }
-    }];
-    
-    return euqal;
 }
+#endif
 
-- (NSUInteger)hash {
-    NSMutableArray *propertyArray = [[self objc_properties] mutableCopy];
-    if ([propertyArray containsObject:@"hash"]) {
-        [propertyArray removeObject:@"hash"];
-    }
-    __block NSUInteger hashCode = 0;
-    [propertyArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        hashCode ^= [[self valueForKey:obj] hash];
-    }];
-
-    return hashCode;
-}
-
-// Make subclass conforms CHXRequestConstructProtocol
-
-- (instancetype)init {
+- (nullable instancetype)init {
     self = [super init];
     if (!self) {
         return nil;
     }
     
-    if ([self conformsToProtocol:@protocol(CHXRequestConstructProtocol)] &&
-        [self conformsToProtocol:@protocol(CHXRequestRetrieveProtocol)]) {
-        self.subclass = (id <CHXRequestConstructProtocol, CHXRequestRetrieveProtocol>) self;
-    } else {
-        NSAssert(NO, @"subclass must conforms CHXRequestConstructProtocol and CHXRequestRetrieveProtocol");
+    if (![self conformsToProtocol:@protocol(CHXRequestable)] ||
+        ![self conformsToProtocol:@protocol(CHXResponseable)]) {
+        [NSException raise:@"Request must conform `CHXRequestable` and `CHXResponseable` " format:@""];
     }
+    
+    _setup = (id<CHXRequestable, CHXResponseable>)self;
+    _command = (id<CHXCommandability>)[self.setup requestCommand];
+    _printDebugInfo = YES;
     
     return self;
 }
 
-#pragma mark - CHXRequest+Private
+- (void)start {
+    [self _initializeQueue];
+    [self.command injectRequest:self];
+}
 
-- (CHXRequest *)initializeQueueIfNeeded {
+- (void)cancel {
+    [self.command removeRequest];
+}
+
+#pragma mark - 
+
+- (void)_initializeQueue {
     if (self.queue) {
-        return self;
+        return;
     }
     
     self.queue = ({
@@ -113,15 +89,86 @@
         dispatch_suspend(queue);
         queue;
     });
+}
+
+- (void)notifyComplete {
+    if (self.queue) {
+        dispatch_resume(self.queue);
+    }
+}
+
+#pragma mark - 
+
+- (nonnull CHXRequest *)completionHandler:(nullable RequestCompletionHandler)completionHandler {
+    dispatch_async(self.queue, ^{
+        if (self.deliverOnMainThread) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionHandler(self, self.responseObject);
+            });
+        } else {
+            completionHandler(self, self.responseObject);
+        }
+    });
 
     return self;
 }
 
-- (CHXRequest *)notifyComplete {
-    if (self.queue) {
-        dispatch_resume(self.queue);
-    }
+- (nonnull CHXRequest *)successHandler:(nullable RequestSuccessHandler)successHandler {
+    dispatch_async(self.queue, ^{
+        if (!self.responseSuccess) {
+            return;
+        }
+        if (self.deliverOnMainThread) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successHandler(self, self.responseResult);
+            });
+        } else {
+            successHandler(self, self.responseResult);
+        }
+    });
+
+    return self;
+}
+
+- (nonnull CHXRequest *)failureHandler:(nullable RequestFailureHandler)failureHandler {
+    dispatch_async(self.queue, ^{
+        if (self.responseSuccess) {
+            return;
+        }
+        if (self.deliverOnMainThread) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failureHandler(self, self.responseMessage);
+            });
+        } else {
+            failureHandler(self, self.responseMessage);
+        }
+    });
+
+    return self;
+}
+
+- (nonnull CHXRequest *)startRequestWithSuccessHandler:(nullable RequestSuccessHandler)successHandler
+                                        failureHandler:(nullable RequestFailureHandler)failureHandler {
+    [self start];
     
+    dispatch_async(self.queue, ^{
+        if (self.deliverOnMainThread) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (self.responseSuccess) {
+                    successHandler(self, self.responseResult);
+                } else {
+                    failureHandler(self, self.responseMessage);
+                }
+            });
+        } else {
+            if (self.responseSuccess) {
+                successHandler(self, self.responseResult);
+            } else {
+                failureHandler(self, self.responseMessage);
+            }
+        }
+    });
+
     return self;
 }
 

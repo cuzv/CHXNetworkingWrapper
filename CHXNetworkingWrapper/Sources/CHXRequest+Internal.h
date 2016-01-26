@@ -1,9 +1,9 @@
 //
-//  CHXRequest+CHXRequestCommand.m
+//  CHXRequest+Internal.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 7/11/15.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/25/16.
+//  Copyright © @2016 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,30 @@
 //  THE SOFTWARE.
 //
 
-
-#import "CHXRequest+CHXRequestCommand.h"
-#import "CHXRequestCommand.h"
-#import "CHXRequest+Private.h"
+#import <Foundation/Foundation.h>
 
 @interface CHXRequest ()
-@end
 
-@implementation CHXRequest (CHXRequestCommand)
+/// Server response object, generally contains `code`,  `result`, `message`
+@property (nonatomic, strong, nullable) id responseObject;
 
-- (CHXRequest *)startRequest {
-    [self initializeQueueIfNeeded];
-    
-    [self.command addRequest:self];
-    return self;
-}
+/// Response code
+@property (nonatomic, assign) NSInteger responseCode;
 
-- (CHXRequest *)stopRequest {
-    [self.command removeRequest:self];
-    return self;
-}
+/// Retrieve result data, will be nil before the request notify complete
+@property (nonatomic, strong, nullable) id responseResult;
 
-- (CHXRequest *)stopAllRequest {
-    [self.command removeAllRequest];
-    return self;
-}
+/// Retrieve error message, usuall be sent NSString
+/// may be nil before the request notify complete
+@property (nonatomic, strong, nullable) id responseMessage;
 
+/// Is the request response process succeed
+@property (nonatomic, assign) BOOL responseSuccess;
+
+
+
+/// Notify the request is complete
+/// No matter the request is success or failure, will invoke this method
+- (void)notifyComplete;
 
 @end

@@ -1,9 +1,9 @@
 //
-//  NSObject+ObjcRuntime.m
+//  CHXRequestAFCommand.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-25.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,17 @@
 //  THE SOFTWARE.
 //
 
-#import "NSObject+ObjcRuntime.h"
-#import <objc/runtime.h>
+#import <Foundation/Foundation.h>
+#import "CHXCommandability.h"
 
-@implementation NSObject (ObjcRuntime)
+extern NSString * const CHXNetworkingReachabilityDidChangeNotification;
+extern NSString * const CHXNetworkingReachabilityNotificationStatusItem;
 
-- (NSArray *)objc_properties {
-    NSMutableArray *propertyArray = [[NSMutableArray alloc] init];
-    u_int count;
-    objc_property_t *propertyList = class_copyPropertyList([self class], &count);
-    for (int i = 0; i < count; i++) {
-        const char *propertyName = property_getName(propertyList[i]);
-        NSString *stringName = [NSString  stringWithCString:propertyName
-                                                   encoding:NSUTF8StringEncoding];
-        [propertyArray addObject:stringName];
-    }
-    
-    free(propertyList);
-    
-    return [[NSArray alloc] initWithArray:propertyArray];
-}
+extern NSString * const CHXNetworkReachabilityStatusUnknown;
+extern NSString * const CHXNetworkReachabilityStatusNotReachable;
+extern NSString * const CHXNetworkReachabilityStatusReachableViaWWAN;
+extern NSString * const CHXNetworkReachabilityStatusReachableViaWiFi;
+
+@interface CHXAFCommand : NSObject <CHXCommandability>
 
 @end

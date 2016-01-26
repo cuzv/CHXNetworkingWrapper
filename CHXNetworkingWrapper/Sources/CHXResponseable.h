@@ -1,9 +1,9 @@
 //
-//  CHXRequestCommandProtocol.h
+//  CHXResponseable.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 7/13/15.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,32 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CHXNetworkingWrapperDefine.h"
 
-@class CHXRequest;
+typedef _Nonnull id(^ConvertResponseHandler)(_Nonnull id);
 
-@protocol CHXRequestCommandProtocol <NSObject>
+@protocol CHXResponseable <NSObject>
 
-/// Add a request task
-- (void)addRequest:(CHXRequest *)request;
+@required
 
-/// Cancel request task
-- (void)removeRequest:(CHXRequest *)request;
+/// The response code field name.
+- (nonnull NSString *)responseCodeFieldName;
 
-/// Cancel all request task
-- (void)removeAllRequest;
+/// The response succes code value
+- (NSInteger)responseSuccessCodeValue;
+
+/// The response result field name.
+- (nonnull NSString *)responseResultFieldName;
+
+/// The response message field name.
+- (nonnull NSString *)responseMessageFieldName;
+
+@optional
+
+/// The response encoding type.
+- (CHXResponseEncoding)responseEncoding;
+
+/// Convert HTTP response data to Foundation object
+- (nullable ConvertResponseHandler)convertResponseHandler;
 
 @end

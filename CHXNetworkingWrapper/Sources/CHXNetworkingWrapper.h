@@ -27,14 +27,11 @@
 #ifndef CHXNetworkingWrapper_CHXNetworkingWrapper_h
 #define CHXNetworkingWrapper_CHXNetworkingWrapper_h
 
-#import "CHXRequestEnum.h"
-#import "CHXRequestConstructProtocol.h"
-#import "CHXRequestRetrieveProtocol.h"
+#import "CHXNetworkingWrapperDefine.h"
+#import "CHXRequestable.h"
+#import "CHXResponseable.h"
 #import "CHXRequest.h"
-#import "CHXRequestCommand.h"
-#import "CHXErrorCodeDescription.h"
-#import "CHXRequest+ResponseHandler.h"
-#import "CHXRequest+CHXRequestCommand.h"
-#import "CHXErrorCodeDescription.h"
+#import "CHXCommandability.h"
+#import "CHXAFCommand.h"
 
 #endif

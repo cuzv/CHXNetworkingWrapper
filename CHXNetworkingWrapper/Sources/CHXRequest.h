@@ -1,9 +1,9 @@
 //
-//  CHXRequest.h
+//  CHXRequestHost.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 2015-04-19.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -25,43 +25,38 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
-#import "CHXRequestConstructProtocol.h"
-#import "CHXRequestRetrieveProtocol.h"
-#import "CHXRequestCommandProtocol.h"
 
-#pragma mark - CHXRequest
+@protocol CHXRequestable;
+@protocol CHXResponseable;
 
-/// This class collection a request infos what needed, by subclass and override methods
 @interface CHXRequest : NSObject
 
-///// The command, Before start requst, inject command first
-@property (nonatomic, weak) id <CHXRequestCommandProtocol> command;
+@property (nonatomic, weak, readonly) id<CHXRequestable, CHXResponseable> setup;
+
+/// Start the request.
+- (void)start;
+///  Cancel the request.
+- (void)cancel;
+
+/// Default is NO.
+@property (nonatomic, assign) BOOL deliverOnMainThread;
+/// Default is YES.
+@property (nonatomic, assign) BOOL printDebugInfo;
 
 @end
 
-#pragma mark - CHXRequestCommand retrieve data
+#pragma mark - Response
+
+typedef void (^RequestCompletionHandler)(CHXRequest * _Nonnull request, _Nullable id responseObject);
+typedef void (^RequestSuccessHandler)(CHXRequest * _Nonnull request, _Nullable id responseResult);
+typedef void (^RequestFailureHandler)(CHXRequest * _Nonnull request, _Nullable id responseMessage);
 
 @interface CHXRequest ()
 
-/// Server response object, generally contains `code`,  `result`, `message`
-@property (nonatomic, strong) id responseObject;
-
-
-/// Response code
-/// `[CHXRequestRetrieveProtocol] responseCodeFieldName` value
-@property (nonatomic, assign) NSInteger responseCode;
-
-/// Retrieve result data, will be nil before the request notify complete
-/// `[CHXRequestRetrieveProtocol] responseResultFieldName` value
-@property (nonatomic, strong) id responseResult;
-
-/// Retrieve error message, usuall be sent NSString
-/// may be nil before the request notify complete
-/// `[CHXRequestRetrieveProtocol] responseMessageFieldName` value
-@property (nonatomic, strong) id responseMessage;
-
-/// Is the request response process succeed
-@property (nonatomic, assign) BOOL responseSuccess;
+- (nonnull CHXRequest *)completionHandler:(nullable RequestCompletionHandler)completionHandler;
+- (nonnull CHXRequest *)successHandler:(nullable RequestSuccessHandler)successHandler;
+- (nonnull CHXRequest *)failureHandler:(nullable RequestFailureHandler)failureHandler;
+- (nonnull CHXRequest *)startRequestWithSuccessHandler:(nullable RequestSuccessHandler)successHandler
+                                        failureHandler:(nullable RequestFailureHandler)failureHandler;
 
 @end

@@ -50,51 +50,35 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    NSDictionary *dict = @{@"name":@"Moch", @"age":@22};
-//    NSLog(@"%@", dict);
-//    
-//    [self testApi];
-//    [self testDownload];
-
-//    dispatch_apply(100, dispatch_get_main_queue(), ^(size_t index) {
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            [self testApi];
-//        });
-//    });
+    [[NSNotificationCenter defaultCenter] addObserverForName:CHXNetworkingReachabilityDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        NSLog(@"%@", note.userInfo);
+    }];
+    
 }
 
 - (void)testApi {
-    
     CHXPromoteProductListRequest *request = [[CHXPromoteProductListRequest alloc] initWithNumber:3 type:@"index_best"];
     [request startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
         NSLog(@"responseResult: %@", responseResult);
     } failureHandler:^(CHXRequest *request, id responseMessage) {
-        NSLog(@"responseMessage: %@", responseMessage);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[UIAlertView alloc] initWithTitle:@"" message:responseMessage delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil] show];
+        });
     }];
-//    [request stopRequest];
-
-    
-//    [AFHTTPSessionManager manager].responseSerializer = [AFHTTPResponseSerializer serializer];
-//    [[AFHTTPSessionManager manager] POST:@"http://www.163.com" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-//        NSLog(@"OK");
-//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Success" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
-//    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-//        NSLog(@"NO");
-//        [[[UIAlertView alloc] initWithTitle:@"" message:@"Failure" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil] show];
-//    }];
-    
+    if (arc4random() % 2) {
+        [request cancel];
+    }
 }
 
 - (void)testDownload {
     CHXDownLoadRequest *down = [[CHXDownLoadRequest new] initWithDownloadProgress:^(CGFloat progress) {
         NSLog(@"progress = %f", progress);
     }];
-    [down startRequest];
-//    [down startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
-//        NSLog(@"%@", responseResult);
-//    } failureHandler:^(CHXRequest *request, id responseMessage) {
-//        NSLog(@"%@", responseMessage);
-//    }];
+    [down startRequestWithSuccessHandler:^(CHXRequest *request, id responseResult) {
+        NSLog(@"%@", responseResult);
+    } failureHandler:^(CHXRequest *request, id responseMessage) {
+        NSLog(@"responseMessage: %@", responseMessage);
+    }];
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -104,6 +88,7 @@
 //        sleep(0.5);
 //        [self testApi];
 //    }
+
     [self testApi];
 }
 

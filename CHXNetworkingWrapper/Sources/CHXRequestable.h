@@ -1,9 +1,9 @@
 //
-//  CHXRequestConstructProtocol.h
+//  CHXRequestable.h
 //  CHXNetworkingWrapper
 //
-//  Created by Moch Xiao on 7/10/15.
-//  Copyright (c) 2014 Moch Xiao (https://github.com/cuzv).
+//  Created by Moch Xiao on 1/20/16.
+//  Copyright © @2014 Moch Xiao (https://github.com/cuzv).
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -24,57 +24,59 @@
 //  THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
-#import "CHXRequestEnum.h"
-#import "CHXRequestCommandProtocol.h"
+#import <UIKit/UIKit.h>
+#import "CHXNetworkingWrapperDefine.h"
+#import "CHXCommandability.h"
 
 @protocol AFMultipartFormData;
-typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
+typedef void (^AFConstructingBlock)(id<AFMultipartFormData> __nonnull formData);
 
-@protocol CHXRequestConstructProtocol <NSObject>
+@protocol CHXRequestable <NSObject>
 
 @required
 
-/// Get assembly request body parameters
-- (NSDictionary *)requestParameters;
+/// The request command. Returned value must conform `CHXCommandability`,
+/// default implemnt provide `CHXAFCommand`.
+- (nonnull id)requestCommand;
 
-/// Get the request URL address
-- (NSString *)requestURLPath;
-
-/// Get the request method
-- (CHXRequestMethod)requestMethod;
-
-/// Get request paramters serialize type
-- (CHXRequestSerializerType)requestSerializerType;
+/// The request url string.
+- (nonnull NSString *)requestURLPath;
 
 @optional
 
-/// Get assembly request header parameters
-- (NSDictionary *)requestHeaderParameters;
+/// The request method
+- (CHXRequestMethod)requestMethod;
 
-/// Get POST body data block
-- (AFConstructingBlock)constructingBodyBlock;
+/// The request body parameters.
+- (nonnull NSDictionary<NSString *, id> *)requestBodyParameters;
 
-/// download file save path, the request method should always be `GET`
-/// Note: make sure the download file save path exist
-- (NSString *)downloadTargetFilePath;
+/// The request header parameters.
+- (nonnull NSDictionary<NSString *, NSString *> *)requestHeaderParameters;
 
-/// download file progress(0~1)
-- (void(^)(CGFloat progress))downloadProgress;
+/// The request parameter encoding.
+- (CHXParameterEncoding)requestParameterEncoding;
 
-/// upload file progress(0~1)
-- (void(^)(CGFloat progress))uploadProgress;
-
-/// Get the request timeout setup interval
+/// The request timeout interval, `10` by default.
 - (NSTimeInterval)requestTimeoutInterval;
 
-/// Get the custom URLRequest
+/// The POST body data block
+- (nonnull AFConstructingBlock)constructingBodyBlock;
+
+
+/// Download file save path, the request method should always be `GET`.
+/// **Note**: make sure the download file save path exist.
+- (nonnull NSString *)downloadTargetFilePath;
+
+/// download file progress(0~1)
+- (nonnull void(^)(CGFloat progress))downloadProgress;
+
+/// upload file progress(0~1)
+- (nonnull void(^)(CGFloat progress))uploadProgress;
+
+
+/// The custom URLRequest
 /// If return `nil`, ignore `requestParameters, requestBaseURLString,
 /// requestSpecificURLString, requestSuffixURLString, requestMehtod`
-- (NSURLRequest *)customURLRequest;
-
-/// Get cache time interval, if 0, no need cache.
-/// default value is 3 minutes
-- (NSTimeInterval)requestCacheDuration;
+- (nonnull NSURLRequest *)customURLRequest;
 
 @end

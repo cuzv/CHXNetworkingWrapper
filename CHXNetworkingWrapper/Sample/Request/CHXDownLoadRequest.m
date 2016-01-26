@@ -16,8 +16,12 @@
 
 @implementation CHXDownLoadRequest
 
-- (id <CHXRequestCommandProtocol>)command {
-    return [CHXRequestCommand new];
+- (void)dealloc {
+    NSLog(@"%s", __FUNCTION__);
+}
+
+- (id)requestCommand {
+    return [CHXAFCommand new];
 }
 
 - (instancetype)initWithDownloadProgress:(void(^)(CGFloat progress))downloadProgress {
@@ -36,7 +40,7 @@
 }
 
 - (NSString *)requestURLPath {
-    return @"http://pic.miercn.com/uploads/allimg/150518/40-15051Q51345.jpg";
+    return @"http://pic14.nipic.com/20110522/7411759_164157418126_2.jpg";
 }
 
 - (NSString *)downloadTargetFilePath {
@@ -70,17 +74,12 @@
     return @"msg";
 }
 
-- (CHXRequestSerializerType)requestSerializerType {
-    return CHXRequestSerializerTypeHTTP;
+- (CHXParameterEncoding)requestParameterEncoding {
+    return CHXParameterEncodingURL;
 }
 
-- (CHXResponseSerializerType)responseSerializerType {
-    return CHXResponseSerializerTypeHTTP;
+- (CHXResponseEncoding)responseEncoding {
+    return CHXResponseEncodingForm;
 }
-
-- (id)responseObjectFromRetrieveData:(id)data {
-    return data;
-}
-
 
 @end
