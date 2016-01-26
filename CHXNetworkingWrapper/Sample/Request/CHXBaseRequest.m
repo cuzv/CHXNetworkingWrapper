@@ -46,7 +46,7 @@ NSString * const ApiURLForRelease = @"api.haioo.com/";
 
 #pragma mark - CHXRequestable
 
-- (id)requestCommand {
+- (id<CHXCommandability>)requestCommand {
     return [CHXAFCommand new];
 }
 

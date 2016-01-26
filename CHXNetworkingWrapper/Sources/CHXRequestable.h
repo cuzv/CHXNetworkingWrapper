@@ -35,9 +35,8 @@ typedef void (^AFConstructingBlock)(id<AFMultipartFormData> __nonnull formData);
 
 @required
 
-/// The request command. Returned value must conform `CHXCommandability`,
-/// default implemnt provide `CHXAFCommand`.
-- (nonnull id)requestCommand;
+/// The request command, default implemnt provide `CHXAFCommand`.
+- (nonnull id<CHXCommandability>)requestCommand;
 
 /// The request url string.
 - (nonnull NSString *)requestURLPath;
